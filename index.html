@@ -393,6 +393,8 @@ body {
   box-shadow: var(--sh-lg);
   animation: mUp .22s ease;
   margin: auto;
+  display: flex;
+  flex-direction: column;
 }
 .modal-title {
   font-family: var(--font-head);
@@ -405,6 +407,13 @@ body {
   display: flex;
   gap: 10px;
   margin-top: 20px;
+  padding-top: 14px;
+  padding-bottom: 4px;
+  border-top: 1px solid var(--border);
+  position: sticky;
+  bottom: 0;
+  background: white;
+  flex-shrink: 0;
 }
 .modal-actions .btn { flex: 1; justify-content: center; }
 @keyframes mUp {
@@ -666,7 +675,8 @@ body {
   .mar-head, .mar-row-item { grid-template-columns: 1fr 80px 100px; }
   .mar-head div:nth-child(4), .mar-head div:nth-child(5),
   .mar-row-item div:nth-child(4), .mar-row-item div:nth-child(5) { display: none; }
-  .modal { padding:20px 16px; border-radius:20px 20px 0 0; position:fixed; bottom:0; left:0; right:0; max-width:100%; max-height:92vh; margin:0; padding-bottom:calc(20px + env(safe-area-inset-bottom,12px)); }
+  .modal { padding:20px 16px 0 16px; border-radius:20px 20px 0 0; position:fixed; bottom:0; left:0; right:0; max-width:100%; max-height:88vh; margin:0; overflow-y:auto; }
+  .modal-actions { padding-bottom:calc(16px + env(safe-area-inset-bottom,12px)); position:sticky; bottom:0; background:white; }
   .ph-title { font-size: 1.25rem; }
 }
 @media(max-width: 480px) {
@@ -1595,11 +1605,10 @@ body {
         <span style="flex:1">Privacy Policy</span>
         <span style="font-size:.7rem;color:var(--slate-light)">Opens in browser →</span>
       </a>
-      <a href="mailto:privacy@tendedpro.app"
-         style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border:1.5px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--navy);font-size:.86rem;font-weight:600">
+      <a href="/cdn-cgi/l/email-protection#bececcd7c8dfddc7fecadbd0dadbdaceccd190dfcece" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border:1.5px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--navy);font-size:.86rem;font-weight:600">
         <span style="font-size:1.1rem">✉️</span>
         <span style="flex:1">Contact Support</span>
-        <span style="font-size:.7rem;color:var(--slate-light)">privacy@tendedpro.app</span>
+        <span style="font-size:.7rem;color:var(--slate-light)"><span class="__cf_email__" data-cfemail="6a1a18031c0b09132a1e0f040e0f0e1a1805440b1a1a">[email&#160;protected]</span></span>
       </a>
       <a href="https://flougher.github.io/tended-pro/"
          target="_blank"
@@ -2425,7 +2434,7 @@ body {
 
 <!-- MAR Status Modal (cycle through statuses) -->
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js" defer></script><script>
 "use strict";
 // ═══════════════════════════════════════════════════════════════
 // TENDED PRO — PHASE 1: COMPLETE JAVASCRIPT
@@ -7196,7 +7205,4 @@ function installPWA(){
   _deferredInstall.prompt();
   _deferredInstall.userChoice.then(() => { _deferredInstall=null; const b=document.getElementById('install-banner'); if(b) b.remove(); });
 }
-window.addEventListener('appinstalled', () => { _deferredInstall=null; const b=document.getElementById('install-banner'); if(b) b.remove(); if(typeof toast==='function') toast('✅ Tended Health Pro added to home screen!','var(--given)'); });
-</script>
-</body>
-</html>
+window.addEventListener('
