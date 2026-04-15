@@ -668,6 +668,12 @@ body {
   .sidebar { display: none; }
   .bnav { display: flex; }
   .shell { height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 46px; padding: 0 14px; }
+  .topbar-brand { font-size: .85rem; }
+  .topbar-logo { width: 28px; height: 28px; }
+  .trial-banner { padding: 4px 12px; font-size: .72rem; }
+  .trial-upgrade-btn { padding: 3px 10px; font-size: .7rem; }
+  #disclaimer-bar { font-size: .68rem; padding: 4px 14px; }
   .body-area { flex: 1; overflow: hidden; flex-direction: column; min-height: 0; display: flex; }
   .content { 
     flex: 1;
@@ -997,8 +1003,8 @@ body {
 .trial-banner {
   background: linear-gradient(90deg, var(--navy-mid), var(--navy-light));
   color: white; display: flex; align-items: center;
-  justify-content: space-between; gap: 12px;
-  padding: 8px 20px; font-size: .8rem; flex-shrink: 0; flex-wrap: wrap;
+  justify-content: space-between; gap: 8px;
+  padding: 6px 14px; font-size: .76rem; flex-shrink: 0;
 }
 .trial-banner.expired { background: linear-gradient(90deg, #7A1A1A, #A02020); }
 .trial-banner.premium { background: linear-gradient(90deg, var(--teal), var(--teal-mid)); }
@@ -1327,6 +1333,13 @@ body {
     <div class="card-title">📝 Shift Notes
       <span style="font-size:.7rem;font-weight:400;color:var(--slate-light);margin-left:8px">General narrative — separate from incident log</span>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <label style="font-size:.78rem;color:var(--slate-mid);font-weight:600;flex-shrink:0">Date:</label>
+      <input type="date" id="shift-notes-date"
+        style="border:1.5px solid var(--border);border-radius:var(--r);padding:6px 10px;font-family:var(--font-body);font-size:.82rem;background:white;color:var(--text)"
+        onchange="loadShiftNotesByDate()">
+      <span id="shift-notes-date-label" style="font-size:.74rem;color:var(--slate-light)"></span>
+    </div>
     <textarea id="shift-notes-text" rows="4"
       placeholder="Write a general shift narrative here — how the patient is doing, observations, mood, anything the next caregiver should know beyond the structured logs…"
       onblur="saveShiftNotes()"
@@ -1402,29 +1415,49 @@ body {
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <input type="date" id="mar-date" onchange="renderMAR()" style="border:1.5px solid var(--border);border-radius:var(--r);padding:7px 11px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--text)">
+      <button class="btn btn-teal btn-sm" onclick="openModal('med-modal')">+ Add Medication</button>
       <button class="btn btn-secondary btn-sm" onclick="printMAR()">🖨️ Print MAR</button>
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:16px">
-    <div class="grid-2">
-      <div class="fg" style="margin:0">
-        <label>Patient</label>
-        <select id="mar-patient" onchange="renderMAR()" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
-          <option value="">— Select patient —</option>
-        </select>
-      </div>
-      <div class="fg" style="margin:0">
-        <label>Caregiver Initials</label>
-        <div style="display:flex;gap:8px">
-          <input id="mar-initials" placeholder="e.g. RN-JL" maxlength="10" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-mono);font-size:.9rem;background:white;width:100%">
-          <button class="btn btn-secondary btn-sm" onclick="saveInitials()">Save</button>
+  <!-- MAR view tabs -->
+  <div style="display:flex;margin-bottom:16px;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:white">
+    <button id="mar-tab-single" onclick="setMARTab('single')"
+      style="flex:1;padding:9px 14px;border:none;background:var(--teal);color:white;font-family:var(--font-body);font-size:.84rem;font-weight:700;cursor:pointer">
+      Single Patient
+    </button>
+    <button id="mar-tab-all" onclick="setMARTab('all')"
+      style="flex:1;padding:9px 14px;border:none;background:white;color:var(--slate-mid);font-family:var(--font-body);font-size:.84rem;font-weight:600;cursor:pointer;border-left:1.5px solid var(--border)">
+      All Patients Today
+    </button>
+  </div>
+
+  <!-- Single patient view -->
+  <div id="mar-single-view">
+    <div class="card" style="margin-bottom:16px">
+      <div class="grid-2">
+        <div class="fg" style="margin:0">
+          <label>Patient</label>
+          <select id="mar-patient" onchange="renderMAR()" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+            <option value="">— Select patient —</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0">
+          <label>Caregiver Initials</label>
+          <div style="display:flex;gap:8px">
+            <input id="mar-initials" placeholder="e.g. RN-JL" maxlength="10" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-mono);font-size:.9rem;background:white;width:100%">
+            <button class="btn btn-secondary btn-sm" onclick="saveInitials()">Save</button>
+          </div>
         </div>
       </div>
     </div>
+    <div id="mar-table" style="margin-bottom:16px"></div>
   </div>
 
-  <div id="mar-table" style="margin-bottom:16px"></div>
+  <!-- All patients today view -->
+  <div id="mar-all-view" style="display:none">
+    <div id="mar-all-content"></div>
+  </div>
 
   <div class="card">
     <div class="card-title">📝 MAR Notes — <span id="mar-notes-date"></span></div>
@@ -1495,7 +1528,7 @@ body {
       <div style="font-size:2.4rem;margin-bottom:12px">✅</div>
       <div style="font-family:var(--font-head);font-size:1.1rem;color:var(--navy);margin-bottom:8px">No Black Box Warnings Detected</div>
       <div style="font-size:.86rem;color:var(--slate-light);line-height:1.6">None of the medications in your current list carry FDA black box warnings — or none have been added yet.</div>
-      <button class="btn btn-secondary btn-sm" style="margin-top:16px" onclick="navTo('settings')">➕ Add Medications in Settings</button>
+      <button class="btn btn-secondary btn-sm" style="margin-top:16px" onclick="navTo('mar')">➕ Add Medications in MAR</button>
     </div>
   </div>
   <div class="card" style="margin-top:4px">
@@ -1595,6 +1628,10 @@ body {
         <!-- Buttons -->
         <div style="display:flex;flex-direction:column;gap:8px">
           <button class="btn btn-teal btn-sm" style="justify-content:center" onclick="exportData()">📤 Export All Data (JSON)</button>
+          <button class="btn btn-secondary btn-sm" style="justify-content:center;border-color:var(--teal);color:var(--teal)" onclick="exportAgencySummary()">📋 Export Daily Summary PDF (Agency)</button>
+          <div style="font-size:.72rem;color:var(--slate-light);line-height:1.6;padding:8px 10px;background:var(--off-white);border-radius:var(--r);border:1px solid var(--border);margin-top:2px">
+            ⚕️ <strong style="color:var(--slate-mid)">HIPAA Notice:</strong> This summary contains Protected Health Information (PHI). Save to your device only. Share exclusively through your agency's approved secure channel. Do not send via standard email or unencrypted messaging.
+          </div>
           <button class="btn btn-secondary btn-sm" style="justify-content:center" onclick="document.getElementById('import-file').click()">📥 Import Backup</button>
           <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
           <button class="btn btn-secondary btn-sm" style="justify-content:center;border-color:var(--teal);color:var(--teal)" onclick="confirmLoadDemo()">🧪 Load Demo Data</button>
@@ -2128,6 +2165,13 @@ body {
     <div class="ph-sub">Speak naturally — text appears instantly in any field</div></div>
   </div>
 
+  <!-- Browser compatibility warning -->
+  <div id="voice-browser-warn" style="display:none;background:var(--held-bg);border:1.5px solid var(--held);border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px">
+    <div style="font-weight:700;font-size:.88rem;color:var(--held);margin-bottom:6px">⚠️ Voice to Text Not Supported</div>
+    <div style="font-size:.82rem;color:var(--slate-mid);line-height:1.6">Your current browser does not support Voice to Text. This feature requires <strong>Google Chrome</strong> on Android.<br><br>
+    To use Voice to Text: open this app in <strong>Chrome</strong> (not Samsung Browser, Firefox, or other browsers).</div>
+  </div>
+
   <div class="card" style="margin-bottom:16px">
     <div class="card-title">🎙️ How Voice to Text Works</div>
     <div style="font-size:.87rem;color:var(--slate-mid);line-height:1.8;margin-bottom:14px">
@@ -2431,6 +2475,11 @@ body {
 <div class="overlay" id="med-modal">
   <div class="modal">
     <div class="modal-title" id="med-modal-title">Add Medication</div>
+    <div class="fg"><label>Patient (optional — leave blank for all patients)</label>
+      <select id="mm-patient" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+        <option value="">— All patients (shared) —</option>
+      </select>
+    </div>
     <div class="form-row">
       <div class="fg"><label>Medication Name *</label><input id="mm-name" placeholder="Metformin"></div>
       <div class="fg"><label>Dose</label><input id="mm-dose" placeholder="500mg"></div>
@@ -3132,7 +3181,7 @@ function openPatientDetail(id){
         </div>
         ${bbwBadgeHtml(m.name, false)}
       </div>`).join('')
-    : '<div style="color:var(--slate-light);font-size:.84rem">No medications in shared list. Add medications in Settings.</div>';
+    : '<div style="color:var(--slate-light);font-size:.84rem">No medications added yet. <button class="btn btn-teal btn-sm" style="margin-top:8px" onclick="closePatientDetail();navTo(\'mar\')">+ Add Medication</button></div>';
 
   document.getElementById('detail-emergency').innerHTML = p.emergency
     ? (() => {
@@ -3155,8 +3204,42 @@ function closePatientDetail(){
 
 function deletePatient(id){
   const p = D.patients.find(x => x.id === id);
-  if(!confirm(`Remove ${p?.fname || 'this patient'} from the roster? This cannot be undone.`)) return;
+  if(!p) return;
+  const name = p.fname + ' ' + p.lname;
+  // Count associated records
+  const medCount  = (D.meds||[]).filter(m => !m.patientId || m.patientId == id).length;
+  const incCount  = (D.incidents||[]).filter(i => i.patientId == id).length;
+  const wndCount  = (D.wounds||[]).filter(w => w.patientId == id).length;
+  showDeletePatientModal(id, name, medCount, incCount, wndCount);
+}
+
+function showDeletePatientModal(id, name, meds, incidents, wounds){
+  const existing = document.getElementById('delete-patient-modal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'delete-patient-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(12,27,51,.7);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `<div style="background:white;border-radius:16px;padding:28px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(12,27,51,.4)">
+    <div style="font-size:1.8rem;text-align:center;margin-bottom:12px">⚠️</div>
+    <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--navy);text-align:center;margin-bottom:8px">Remove ${name}?</div>
+    <div style="font-size:.84rem;color:var(--slate-mid);line-height:1.7;margin-bottom:16px;text-align:center">This will permanently remove this patient and all their associated records. This cannot be undone.</div>
+    <div style="background:var(--refused-bg);border-radius:var(--r);padding:10px 14px;font-size:.78rem;color:var(--refused);margin-bottom:20px">
+      ⚠️ All MAR records, incidents, wounds, and other data linked to this patient will be deleted.
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="document.getElementById('delete-patient-modal').remove()" style="flex:1;padding:11px;background:var(--off-white);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font-body);font-size:.9rem;cursor:pointer;font-weight:600">Cancel</button>
+      <button onclick="confirmDeletePatient(${id})" style="flex:1;padding:11px;background:var(--refused);color:white;border:none;border-radius:var(--r);font-family:var(--font-body);font-size:.9rem;cursor:pointer;font-weight:700">Yes, Remove Patient</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+function confirmDeletePatient(id){
+  const modal = document.getElementById('delete-patient-modal');
+  if(modal) modal.remove();
   D.patients = D.patients.filter(x => x.id !== id);
+  // Remove patient-specific meds
+  D.meds = (D.meds||[]).filter(m => !m.patientId || m.patientId != id);
   save(); renderPatients();
   toast('Patient removed', 'var(--slate)');
 }
@@ -3171,6 +3254,12 @@ function openMedModal(editId){
   const isEdit = _editMedId !== null;
   document.getElementById('med-modal-title').textContent = isEdit ? 'Edit Medication' : 'Add Medication';
   document.getElementById('mm-save').textContent = isEdit ? 'Update' : 'Add Medication';
+  // Populate patient dropdown
+  const ptSel = document.getElementById('mm-patient');
+  if(ptSel){
+    ptSel.innerHTML = '<option value="">— All patients (shared) —</option>' +
+      (D.patients||[]).map(p => `<option value="${p.id}">${p.fname} ${p.lname}</option>`).join('');
+  }
   const m = isEdit ? D.meds.find(x => x.id === _editMedId) : null;
   document.getElementById('mm-name').value   = m?.name   || '';
   document.getElementById('mm-dose').value   = m?.dose   || '';
@@ -3217,7 +3306,7 @@ function renderMedList(){
       <div style="display:flex;align-items:center;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-weight:600;font-size:.86rem">${m.name} ${m.dose||''} ${bbwBadgeHtml(m.name, true)}</div>
-          <div style="font-size:.74rem;color:var(--slate-light)">${m.freq}${m.time?' · '+fmtTime(m.time):''}</div>
+          <div style="font-size:.74rem;color:var(--slate-light)">${m.freq}${m.time?' · '+fmtTime(m.time):''}${m.patientId ? ' · <span style=\"color:var(--teal)\">' + ((D.patients||[]).find(p=>p.id==m.patientId)?.fname||'') + '</span>' : ' · <span style=\"color:var(--slate-light)\">All patients</span>'}</div>
         </div>
         <button class="btn btn-secondary btn-xs btn-icon" onclick="openMedModal(${m.id})">✏️</button>
         <button class="btn btn-danger btn-xs btn-icon" onclick="deleteMed(${m.id})">✕</button>
@@ -3261,6 +3350,340 @@ function saveInitials(){
   toast('✅ Initials saved', 'var(--given)');
 }
 
+// ── MAR tab switching ─────────────────────────────────────────
+let _marTab = 'single';
+function setMARTab(tab){
+  _marTab = tab;
+  const single = document.getElementById('mar-single-view');
+  const all    = document.getElementById('mar-all-view');
+  const tabS   = document.getElementById('mar-tab-single');
+  const tabA   = document.getElementById('mar-tab-all');
+  if(tab === 'single'){
+    if(single) single.style.display = 'block';
+    if(all)    all.style.display    = 'none';
+    if(tabS){ tabS.style.background = 'var(--teal)'; tabS.style.color = 'white'; }
+    if(tabA){ tabA.style.background = 'white'; tabA.style.color = 'var(--slate-mid)'; }
+    renderMAR();
+  } else {
+    if(single) single.style.display = 'none';
+    if(all)    all.style.display    = 'block';
+    if(tabA){ tabA.style.background = 'var(--teal)'; tabA.style.color = 'white'; }
+    if(tabS){ tabS.style.background = 'white'; tabS.style.color = 'var(--slate-mid)'; }
+    renderMARAllPatients();
+  }
+}
+
+function renderMARAllPatients(){
+  const el = document.getElementById('mar-all-content');
+  if(!el) return;
+  const dateVal = document.getElementById('mar-date')?.value || new Date().toISOString().split('T')[0];
+  const patients = D.patients || [];
+  if(!patients.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No patients added yet.</div></div>';
+    return;
+  }
+  const now  = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const isToday = dateVal === new Date().toISOString().split('T')[0];
+  let html = '';
+  patients.forEach(p => {
+    const ptMeds = (D.meds||[]).filter(m => !m.patientId || m.patientId == p.id);
+    if(!ptMeds.length) return;
+    const marKey = `${dateVal}_${p.id}`;
+    const marData = D.mar[marKey] || {};
+    const pending = ptMeds.filter(m => (marData[m.id]?.status||'pending') === 'pending');
+    const given   = ptMeds.filter(m => (marData[m.id]?.status||'pending') === 'given');
+    const held    = ptMeds.filter(m => (marData[m.id]?.status||'pending') === 'held');
+    const refused = ptMeds.filter(m => (marData[m.id]?.status||'pending') === 'refused');
+    const fallBadge = p.fallRisk === 'high' ? '🔴' : p.fallRisk === 'medium' ? '🟡' : '';
+    html += `<div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <span style="font-weight:700;font-size:.95rem;color:var(--navy)">${fallBadge} ${p.fname} ${p.lname}</span>
+          ${p.room ? `<span style="font-size:.74rem;color:var(--slate-light);margin-left:8px">Room ${p.room}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;font-size:.72rem;font-weight:700">
+          ${given.length   ? `<span style="background:var(--given-bg);color:var(--given);padding:2px 8px;border-radius:10px">${given.length} given</span>` : ''}
+          ${pending.length ? `<span style="background:var(--held-bg);color:var(--held);padding:2px 8px;border-radius:10px">${pending.length} pending</span>` : ''}
+          ${refused.length ? `<span style="background:var(--refused-bg);color:var(--refused);padding:2px 8px;border-radius:10px">${refused.length} refused</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${ptMeds.map(m => {
+          const status = marData[m.id]?.status || 'pending';
+          const isOverdue = isToday && status === 'pending' && m.time && (() => {
+            const [h,mn] = m.time.split(':').map(Number);
+            return (h*60+mn) < nowMins - 30;
+          })();
+          const rowBg = status === 'given' ? 'var(--given-bg)' : status === 'refused' ? 'var(--refused-bg)' : status === 'held' ? 'var(--held-bg)' : isOverdue ? '#FFF3CD' : 'var(--off-white)';
+          const rowColor = status === 'given' ? 'var(--given)' : status === 'refused' ? 'var(--refused)' : status === 'held' ? 'var(--held)' : isOverdue ? '#856404' : 'var(--slate-mid)';
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:${rowBg};border-radius:var(--r);border:1px solid ${rowColor}20">
+            <div>
+              <span style="font-size:.84rem;font-weight:600;color:var(--navy)">${m.name}${m.dose?' '+m.dose:''}</span>
+              ${m.time ? `<span style="font-size:.72rem;color:var(--slate-light);margin-left:6px">${fmtTime(m.time)}</span>` : ''}
+              ${isOverdue ? '<span style="font-size:.68rem;font-weight:700;color:#856404;margin-left:6px">⏰ OVERDUE</span>' : ''}
+            </div>
+            <span style="font-size:.72rem;font-weight:700;color:${rowColor};text-transform:uppercase">${status}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html || '<div class="empty"><div class="empty-icon">💊</div><div class="empty-text">No medications found for any patient.</div></div>';
+}
+
+// ── Agency/supervisor export ──────────────────────────────────
+function exportAgencySummary(){
+  const today     = new Date().toISOString().split('T')[0];
+  const dateDisp  = new Date(today+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const caregiver = D.settings?.name     || 'Caregiver';
+  const agency    = D.settings?.agency   || '';
+  const role      = D.settings?.role     || '';
+  const initials  = D.settings?.initials || '';
+  const supervisor= D.settings?.supervisor || '';
+
+  // Build patient sections HTML
+  let patientSections = '';
+  (D.patients||[]).forEach(p => {
+    const marKey  = `${today}_${p.id}`;
+    const marData = D.mar[marKey] || {};
+    const ptMeds  = (D.meds||[]).filter(m => !m.patientId || m.patientId == p.id);
+    const vitals  = (D.vitals||[]).filter(v => v.date === today && v.patientId == p.id);
+    const incs    = (D.incidents||[]).filter(i => i.dt?.startsWith(today) && i.patientId == p.id);
+    const pain    = (D.pain||[]).filter(e => e.date === today && e.patientId == p.id);
+    const wounds  = (D.wounds||[]).filter(w => w.patientId == p.id && w.status !== 'Healed');
+    const fallLabel = p.fallRisk === 'high' ? '🔴 HIGH' : p.fallRisk === 'medium' ? '🟡 MEDIUM' : '🟢 LOW';
+
+    // Meds table
+    let medsHTML = '';
+    if(ptMeds.length){
+      const rows = ptMeds.map(m => {
+        const rec    = marData[m.id] || {};
+        const status = rec.status || 'pending';
+        const time   = rec.timeGiven ? fmtTime(rec.timeGiven) : '—';
+        const init   = rec.initials || '—';
+        const color  = status==='given'?'#166534':status==='refused'?'#991B1B':status==='held'?'#92400E':'#374151';
+        const bg     = status==='given'?'#DCFCE7':status==='refused'?'#FEE2E2':status==='held'?'#FEF3C7':'#F9FAFB';
+        return `<tr>
+          <td>${m.name}${m.dose?' — '+m.dose:''}</td>
+          <td>${m.freq}${m.time?' · '+fmtTime(m.time):''}</td>
+          <td style="text-align:center"><span style="background:${bg};color:${color};padding:2px 8px;border-radius:10px;font-weight:700;font-size:11px;text-transform:uppercase">${status}</span></td>
+          <td style="text-align:center">${time}</td>
+          <td style="text-align:center">${init}</td>
+          ${rec.refusalReason?`<td style="color:#991B1B;font-size:11px">${rec.refusalReason}</td>`:'<td>—</td>'}
+        </tr>`;
+      }).join('');
+      medsHTML = `<h4>Medications</h4>
+        <table><thead><tr><th>Medication</th><th>Schedule</th><th>Status</th><th>Time Given</th><th>Initials</th><th>Notes</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+
+    // Vitals table
+    let vitalsHTML = '';
+    if(vitals.length){
+      const rows = vitals.map(v => `<tr>
+        <td>${fmtTime(v.time||'')}</td>
+        <td>${v.bp||'—'}</td><td>${v.pulse||'—'}</td>
+        <td>${v.temp||'—'}</td><td>${v.spo2||'—'}%</td>
+        <td>${v.glucose||'—'}</td><td>${v.weight||'—'}</td>
+        ${v.alerts?.length?`<td style="color:#991B1B;font-weight:600">${v.alerts.map(a=>a.msg).join('; ')}</td>`:'<td>—</td>'}
+      </tr>`).join('');
+      vitalsHTML = `<h4>Vital Signs</h4>
+        <table><thead><tr><th>Time</th><th>BP</th><th>Pulse</th><th>Temp</th><th>SpO2</th><th>Glucose</th><th>Weight</th><th>Alerts</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+
+    // Incidents
+    let incsHTML = '';
+    if(incs.length){
+      const rows = incs.map(i => {
+        const dt = new Date(i.dt);
+        const color = i.severity==='critical'?'#991B1B':i.severity==='moderate'?'#92400E':'#374151';
+        return `<tr>
+          <td>${dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</td>
+          <td style="color:${color};font-weight:700;text-transform:uppercase">${i.severity}</td>
+          <td>${i.type}</td>
+          <td>${i.desc}</td>
+          <td>${i.action||'—'}</td>
+          <td>${i.reported||'—'}</td>
+        </tr>`;
+      }).join('');
+      incsHTML = `<h4>Incidents</h4>
+        <table><thead><tr><th>Time</th><th>Severity</th><th>Type</th><th>Description</th><th>Action Taken</th><th>Reported To</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+
+    // Pain
+    let painHTML = '';
+    if(pain.length){
+      const rows = pain.map(e => `<tr>
+        <td>${e.time||'—'}</td>
+        <td style="font-weight:700">${e.score}/10</td>
+        <td>${e.location||'—'}</td>
+        <td>${e.quality||'—'}</td>
+        <td>${e.action||'—'}</td>
+      </tr>`).join('');
+      painHTML = `<h4>Pain Assessments</h4>
+        <table><thead><tr><th>Time</th><th>Score</th><th>Location</th><th>Quality</th><th>Action</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+
+    // Active wounds
+    let woundsHTML = '';
+    if(wounds.length){
+      const rows = wounds.map(w => `<tr>
+        <td>${w.location}</td><td>${w.type}</td>
+        <td>${w.stage||'—'}</td><td>${w.status}</td>
+        <td>${w.treatment||'—'}</td>
+      </tr>`).join('');
+      woundsHTML = `<h4>Active Wounds / Skin Conditions</h4>
+        <table><thead><tr><th>Location</th><th>Type</th><th>Stage</th><th>Status</th><th>Treatment</th></tr></thead>
+        <tbody>${rows}</tbody></table>`;
+    }
+
+    if(!ptMeds.length && !vitals.length && !incs.length && !pain.length && !wounds.length) return;
+
+    patientSections += `
+      <div class="patient-section">
+        <div class="patient-header">
+          <div>
+            <span class="patient-name">${p.fname} ${p.lname}</span>
+            ${p.dob?`<span class="patient-meta">DOB: ${p.dob}</span>`:''}
+            ${p.room?`<span class="patient-meta">Room: ${p.room}</span>`:''}
+            ${p.doctor?`<span class="patient-meta">Dr. ${p.doctor}</span>`:''}
+          </div>
+          <div class="fall-risk">Fall Risk: ${fallLabel}</div>
+        </div>
+        ${p.allergies?`<div class="allergies">⚠️ Allergies: ${p.allergies}</div>`:''}
+        ${medsHTML}${vitalsHTML}${incsHTML}${painHTML}${woundsHTML}
+      </div>`;
+  });
+
+  const shiftNotes = getShiftNotesForToday();
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Daily Shift Summary — ${dateDisp}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #1a1a2e; background: white; }
+  .page { max-width: 900px; margin: 0 auto; padding: 32px 40px; }
+  /* Header */
+  .report-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0C1B33; padding-bottom: 16px; margin-bottom: 20px; }
+  .report-title { font-size: 22px; font-weight: 800; color: #0C1B33; letter-spacing: -.3px; }
+  .report-subtitle { font-size: 13px; color: #0E9E8E; font-weight: 600; margin-top: 3px; }
+  .report-meta { text-align: right; font-size: 11px; color: #6B7280; line-height: 1.8; }
+  .report-meta strong { color: #0C1B33; }
+  /* HIPAA notice */
+  .hipaa-notice { background: #FFF3CD; border: 1.5px solid #D97706; border-radius: 6px; padding: 8px 14px; font-size: 10.5px; color: #92400E; margin-bottom: 20px; line-height: 1.5; }
+  /* Patient sections */
+  .patient-section { margin-bottom: 24px; border: 1.5px solid #E5E7EB; border-radius: 8px; overflow: hidden; page-break-inside: avoid; }
+  .patient-header { background: #0C1B33; color: white; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .patient-name { font-size: 14px; font-weight: 700; }
+  .patient-meta { font-size: 11px; color: rgba(255,255,255,.7); margin-left: 14px; }
+  .fall-risk { font-size: 11px; font-weight: 700; }
+  .allergies { background: #FEE2E2; color: #991B1B; padding: 6px 16px; font-size: 11px; font-weight: 600; border-bottom: 1px solid #FECACA; }
+  /* Tables */
+  h4 { font-size: 11px; font-weight: 700; color: #0E9E8E; text-transform: uppercase; letter-spacing: .08em; padding: 10px 16px 4px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+  th { background: #F9FAFB; font-size: 10px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: .06em; padding: 5px 10px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+  td { padding: 5px 10px; font-size: 11px; border-bottom: 1px solid #F3F4F6; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  /* Shift notes */
+  .shift-notes { margin-top: 20px; border: 1.5px solid #E5E7EB; border-radius: 8px; overflow: hidden; }
+  .shift-notes-header { background: #0C1B33; color: white; padding: 10px 16px; font-size: 13px; font-weight: 700; }
+  .shift-notes-body { padding: 14px 16px; font-size: 12px; line-height: 1.7; color: #374151; white-space: pre-wrap; }
+  /* Signature */
+  .signature { margin-top: 32px; display: flex; gap: 40px; }
+  .sig-block { flex: 1; border-top: 1.5px solid #374151; padding-top: 8px; }
+  .sig-label { font-size: 10px; color: #6B7280; text-transform: uppercase; letter-spacing: .06em; }
+  .sig-value { font-size: 12px; font-weight: 600; color: #0C1B33; margin-top: 2px; }
+  /* Footer */
+  .footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid #E5E7EB; display: flex; justify-content: space-between; font-size: 10px; color: #9CA3AF; }
+  /* Print */
+  @media print {
+    body { font-size: 11px; }
+    .page { padding: 20px 24px; }
+    .no-print { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="report-header">
+    <div>
+      <div class="report-title">Daily Shift Summary</div>
+      <div class="report-subtitle">${dateDisp}</div>
+    </div>
+    <div class="report-meta">
+      <div><strong>Caregiver:</strong> ${caregiver}${initials?' ('+initials+')':''}</div>
+      ${role?`<div><strong>Role:</strong> ${role}</div>`:''}
+      ${agency?`<div><strong>Agency:</strong> ${agency}</div>`:''}
+      ${supervisor?`<div><strong>Supervisor:</strong> ${supervisor}</div>`:''}
+      <div><strong>Generated:</strong> ${new Date().toLocaleString()}</div>
+    </div>
+  </div>
+
+  <div class="hipaa-notice">
+    ⚕️ <strong>HIPAA Notice:</strong> This document contains Protected Health Information (PHI).
+    Handle in accordance with HIPAA Privacy Rule requirements. Share only through your agency's approved secure channel.
+    Do not transmit via standard email or unencrypted messaging. Dispose of printed copies securely.
+  </div>
+
+  ${patientSections || '<p style="color:#6B7280;font-style:italic">No patient data recorded for this date.</p>'}
+
+  ${shiftNotes ? `<div class="shift-notes">
+    <div class="shift-notes-header">📝 Shift Notes</div>
+    <div class="shift-notes-body">${shiftNotes}</div>
+  </div>` : ''}
+
+  <div class="signature">
+    <div class="sig-block">
+      <div class="sig-label">Caregiver Signature</div>
+      <div class="sig-value">${caregiver}</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-label">Date</div>
+      <div class="sig-value">${dateDisp}</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-label">Supervisor Review</div>
+      <div class="sig-value">&nbsp;</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-label">Supervisor Signature</div>
+      <div class="sig-value">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Tended Health Pro — Professional Caregiver Documentation</span>
+    <span>Page 1 of 1 · Confidential</span>
+  </div>
+
+  <div class="no-print" style="margin-top:24px;text-align:center">
+    <button onclick="window.print()" style="background:#0C1B33;color:white;border:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-right:10px">
+      🖨️ Save as PDF / Print
+    </button>
+    <button onclick="window.close()" style="background:#F3F4F6;color:#374151;border:1.5px solid #E5E7EB;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">
+      Close
+    </button>
+  </div>
+
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=960,height=800');
+  if(!win){ toast('⚠ Please allow popups to view the PDF summary', 'var(--held)'); return; }
+  win.document.write(html);
+  win.document.close();
+  toast('✅ Daily summary opened — tap Save as PDF / Print', 'var(--given)');
+}
+
 function renderMAR(){
   const dateVal    = document.getElementById('mar-date')?.value || new Date().toISOString().split('T')[0];
   const patientId  = document.getElementById('mar-patient')?.value || '';
@@ -3277,8 +3700,11 @@ function renderMAR(){
   if(!table) return;
 
   if(!D.meds.length){
-    table.innerHTML = `<div class="card" style="text-align:center;color:var(--slate-light);font-size:.88rem">
-      No medications in shared list. <button class="btn btn-teal btn-sm" style="margin-left:10px" onclick="navTo('settings')">Add Medications →</button>
+    table.innerHTML = `<div class="card" style="text-align:center;padding:28px 20px">
+      <div style="font-size:2rem;margin-bottom:12px">💊</div>
+      <div style="font-weight:700;font-size:.95rem;color:var(--navy);margin-bottom:6px">No medications added yet</div>
+      <div style="font-size:.84rem;color:var(--slate-light);margin-bottom:18px">Add medications to start logging the MAR</div>
+      <button class="btn btn-teal" onclick="openModal('med-modal')" style="margin:0 auto">+ Add First Medication</button>
     </div>`;
     return;
   }
@@ -3313,14 +3739,22 @@ function renderMAR(){
       })() : ''}
       ${sorted.map(m => {
         const key = dateVal + '|' + (patientId||'default') + '|' + m.id;
+        // Overdue detection
+        const isToday_mar = dateVal === new Date().toISOString().split('T')[0];
+        const isOverdue_mar = isToday_mar && (rec.status||'pending') === 'pending' && m.time && (() => {
+          const [h,mn] = m.time.split(':').map(Number);
+          const nowMins = new Date().getHours()*60 + new Date().getMinutes();
+          return (h*60+(mn||0)) < nowMins - 30;
+        })();
         const rec = D.mar[key] || { status:'pending', timeGiven:'', initials:'' };
         const st  = rec.status || 'pending';
         const hasBBW = !!getBBW(m.name);
         const isRefused = st === 'refused';
         const hasRefusalDoc = isRefused && rec.refusalReason;
-        return `<div class="mar-row-item" style="${hasBBW ? 'border-left:3px solid #C9963A;background:#FFFDF7;' : isRefused ? 'border-left:3px solid var(--refused);background:var(--refused-bg);' : ''}">
+        const rowStyle_mar = hasBBW ? 'border-left:3px solid #C9963A;background:#FFFDF7;' : isRefused ? 'border-left:3px solid var(--refused);background:var(--refused-bg);' : isOverdue_mar ? 'border-left:3px solid #856404;background:#FFF3CD;' : '';
+        return `<div class="mar-row-item" style="${rowStyle_mar}">
           <div>
-            <div style="font-weight:600;font-size:.86rem">${m.name} ${hasBBW ? bbwBadgeHtml(m.name, true) : ''}</div>
+            <div style="font-weight:600;font-size:.86rem">${m.name} ${hasBBW ? bbwBadgeHtml(m.name, true) : ''} ${isOverdue_mar ? '<span style="font-size:.68rem;font-weight:700;color:#856404;background:#FFF3CD;padding:1px 6px;border-radius:8px;border:1px solid #856404">⏰ OVERDUE</span>' : ''}</div>
             ${m.doctor ? `<div style="font-size:.72rem;color:var(--slate-light)">Dr. ${m.doctor}</div>` : ''}
             ${hasBBW ? `<div style="font-size:.7rem;color:#7A4A00;margin-top:3px;line-height:1.5">⚠ ${getBBW(m.name).watch}</div>` : ''}
             ${isRefused ? `<div style="margin-top:4px">
@@ -4513,8 +4947,11 @@ function importData(input){
 // ═══════════════════════════════════════════════════════════════
 function fmtTime(t){
   if(!t) return '';
-  const m = t.match(/^(\d{1,2}):(\d{2})$/);
+  // Handle HH:MM format
+  const m = t.match(/^(\d{1,2}):(\d{2})(:\d{2})?(\s*[AaPp][Mm])?$/);
   if(!m) return t;
+  // Already has AM/PM
+  if(m[4]) return t.replace(/\s+/,' ').trim();
   let h = parseInt(m[1]), mn = m[2];
   const ampm = h >= 12 ? 'PM' : 'AM';
   if(h > 12) h -= 12;
@@ -4641,8 +5078,9 @@ function renderWounds(){
           <span class="wound-status ${stBadge[w.status]||'ws-new'}" style="margin-left:8px">${w.status}</span>
         </div>
         <div style="display:flex;gap:5px">
-          <button class="btn btn-secondary btn-xs btn-icon" onclick="openWoundModal(${w.id})">✏️</button>
-          <button class="btn btn-danger btn-xs btn-icon" onclick="deleteWound(${w.id})">✕</button>
+          <button class="btn btn-secondary btn-xs btn-icon" onclick="openWoundModal(${w.id})" title="Edit">✏️</button>
+          ${w.status !== 'Healed' ? `<button class="btn btn-xs" onclick="closeWound(${w.id})" title="Mark healed" style="background:var(--given-bg);color:var(--given);border:1px solid var(--given);border-radius:var(--r-sm);padding:3px 8px;font-size:.68rem;font-weight:700;cursor:pointer">✓ Close</button>` : '<span style="font-size:.68rem;color:var(--given);font-weight:600">✓ Healed</span>'}
+          <button class="btn btn-danger btn-xs btn-icon" onclick="deleteWound(${w.id})" title="Delete">✕</button>
         </div>
       </div>
       <div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:6px">
@@ -4654,6 +5092,16 @@ function renderWounds(){
       ${w.treatment ? `<div style="font-size:.83rem;color:var(--teal);margin-bottom:4px">🔧 Treatment: ${w.treatment}</div>` : ''}
       ${w.notes     ? `<div style="font-size:.82rem;color:var(--slate-mid);line-height:1.5">${w.notes}</div>` : ''}
     </div>`).join('');
+}
+
+function closeWound(id){
+  const w = (D.wounds||[]).find(x => x.id === id);
+  if(!w) return;
+  w.status    = 'Healed';
+  w.closedAt  = new Date().toISOString();
+  w.updatedAt = new Date().toISOString();
+  save(); renderWounds();
+  toast('✅ Wound marked as healed/closed', 'var(--given)');
 }
 
 function deleteWound(id){
@@ -5639,6 +6087,10 @@ function startVoice(fieldId){
 }
 
 function renderVoice(){
+  // Show warning if Web Speech API not supported
+  const supported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  const warn = document.getElementById('voice-browser-warn');
+  if(warn) warn.style.display = supported ? 'none' : 'block';
   // Page is static — just update status
   const status = document.getElementById('voice-status');
   if(status){
@@ -6772,14 +7224,27 @@ function renderVitalsDashboardAlert(){
   const existing = document.getElementById('dash-vitals-alert');
   if(existing) existing.remove();
   const today = new Date().toISOString().split('T')[0];
-  const todayAlerts = (D.vitals||[])
+
+  // Collect alerts with patient names
+  const alertEntries = (D.vitals||[])
     .filter(e => e.date === today && e.alerts && e.alerts.length > 0)
-    .flatMap(e => e.alerts);
-  const criticals = todayAlerts.filter(a => a.level === 'critical');
-  const highs     = todayAlerts.filter(a => a.level === 'high');
+    .map(e => {
+      const pt = (D.patients||[]).find(p => p.id == e.patientId);
+      const ptName = pt ? `${pt.fname} ${pt.lname}` : null;
+      return { ptName, alerts: e.alerts };
+    });
+
+  const todayAlerts = alertEntries.flatMap(e => e.alerts);
+  const criticals   = todayAlerts.filter(a => a.level === 'critical');
   if(!todayAlerts.length) return;
+
   const banner = document.getElementById('dash-shift-banner');
   if(!banner) return;
+
+  const firstEntry  = alertEntries[0];
+  const ptPrefix    = firstEntry?.ptName ? `<strong>${firstEntry.ptName}:</strong> ` : '';
+  const extraCount  = todayAlerts.length - 1;
+
   const alert = document.createElement('div');
   alert.id = 'dash-vitals-alert';
   alert.style.cssText = `background:var(--refused-bg);border:2px solid var(--refused);border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;cursor:pointer`;
@@ -6788,11 +7253,10 @@ function renderVitalsDashboardAlert(){
     <div style="font-size:1.4rem">🚨</div>
     <div style="flex:1">
       <div style="font-weight:700;font-size:.9rem;color:var(--refused)">${criticals.length ? 'CRITICAL' : 'WARNING'} — Vitals Alert${todayAlerts.length>1?'s':''} Today</div>
-      <div style="font-size:.76rem;color:var(--refused);margin-top:2px">${todayAlerts[0].msg}${todayAlerts.length>1?' (+'+( todayAlerts.length-1)+' more)':''} · Tap to review</div>
+      <div style="font-size:.76rem;color:var(--refused);margin-top:2px">${ptPrefix}${todayAlerts[0].msg}${extraCount>0?' (+'+(extraCount)+' more)':''} · Tap to review</div>
     </div>
     <div style="font-size:.8rem;font-weight:700;color:var(--refused);white-space:nowrap">View →</div>
   </div>`;
-  // Insert after shift banner
   const bbwAlert = document.getElementById('dash-bbw-alert');
   const insertAfter = bbwAlert || banner;
   insertAfter.insertAdjacentElement('afterend', alert);
@@ -6805,10 +7269,12 @@ function renderVitalsDashboardAlert(){
 const SHIFT_NOTES_KEY = 'tendedPro_shiftNotes';
 
 function saveShiftNotes(){
-  const text = document.getElementById('shift-notes-text')?.value || '';
-  const today = new Date().toISOString().split('T')[0];
+  const text    = document.getElementById('shift-notes-text')?.value || '';
+  const dateEl  = document.getElementById('shift-notes-date');
+  const today   = new Date().toISOString().split('T')[0];
+  const dateVal = dateEl?.value || today;
   const notes = JSON.parse(localStorage.getItem(SHIFT_NOTES_KEY) || '{}');
-  notes[today] = text;
+  notes[dateVal] = text;
   // Keep last 30 days only
   const keys = Object.keys(notes).sort().reverse();
   if(keys.length > 30) keys.slice(30).forEach(k => delete notes[k]);
@@ -6822,12 +7288,35 @@ function saveShiftNotes(){
 
 function loadShiftNotes(){
   const today = new Date().toISOString().split('T')[0];
+  const dateEl = document.getElementById('shift-notes-date');
+  if(dateEl && !dateEl.value) dateEl.value = today;
+  updateShiftNotesDateLabel(today);
   const notes = JSON.parse(localStorage.getItem(SHIFT_NOTES_KEY) || '{}');
   const el    = document.getElementById('shift-notes-text');
   if(el) el.value = notes[today] || '';
-  // Also populate handoff narrative field
   const hn = document.getElementById('ho-narrative');
   if(hn && !hn.value) hn.value = notes[today] || '';
+}
+
+function loadShiftNotesByDate(){
+  const dateEl = document.getElementById('shift-notes-date');
+  if(!dateEl) return;
+  const dateVal = dateEl.value;
+  updateShiftNotesDateLabel(dateVal);
+  const notes = JSON.parse(localStorage.getItem(SHIFT_NOTES_KEY) || '{}');
+  const el    = document.getElementById('shift-notes-text');
+  if(el) el.value = notes[dateVal] || '';
+}
+
+function updateShiftNotesDateLabel(dateVal){
+  const labelEl = document.getElementById('shift-notes-date-label');
+  if(!labelEl) return;
+  const today     = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+  if(dateVal === today)         labelEl.textContent = '(Today)';
+  else if(dateVal === yesterday) labelEl.textContent = '(Yesterday)';
+  else if(dateVal)              labelEl.textContent = new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  else                          labelEl.textContent = '';
 }
 
 function getShiftNotesForToday(){
