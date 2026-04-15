@@ -87,7 +87,7 @@ body {
   background: var(--navy);
   color: white;
   padding: 0 24px;
-  height: 58px;
+  height: 52px;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -204,7 +204,7 @@ body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 28px 32px;
+  padding: 20px 28px;
   background: var(--off-white);
   -webkit-overflow-scrolling: touch;
   min-height: 0;
@@ -218,7 +218,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -1144,9 +1144,9 @@ body {
 </div>
 
 <!-- ═══ PROFESSIONAL USE DISCLAIMER BAR ══════════════════════ -->
-<div id="disclaimer-bar" style="background:#F0F4F8;border-bottom:1px solid var(--border);padding:6px 20px;font-size:.72rem;color:var(--slate-mid);line-height:1.5;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-  <span>⚕️ <strong style="color:var(--navy)">Professional Use Only.</strong> Tended Health Pro is a documentation tool — not a medical device. It does not provide clinical diagnoses and does not replace your agency's required documentation systems. Always follow your employer's policies and applicable regulations.</span>
-  <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:var(--slate-light);cursor:pointer;font-size:1rem;flex-shrink:0;padding:0 2px" title="Dismiss">✕</button>
+<div id="disclaimer-bar" style="background:#F0F4F8;border-bottom:1px solid var(--border);padding:4px 16px;font-size:.68rem;color:var(--slate-mid);line-height:1.4;display:flex;align-items:center;justify-content:space-between;gap:8px">
+  <span>⚕️ <strong style="color:var(--navy)">Professional Use Only.</strong> Documentation tool — not a medical device. Always follow employer policies.</span>
+  <button onclick="this.parentElement.style.display='none';try{localStorage.setItem('disclaimerDismissed','1')}catch(e){}" style="background:none;border:none;color:var(--slate-light);cursor:pointer;font-size:.9rem;flex-shrink:0;padding:0 4px" title="Dismiss">✕</button>
 </div>
 
 <!-- ═══ BODY ══════════════════════════════════════════════ -->
@@ -7653,6 +7653,13 @@ function init(){
   updateTopbarUser();
   renderDashboard();
   setInterval(updateTopbar, 60000);
+  // Auto-hide disclaimer if previously dismissed
+  try {
+    if(localStorage.getItem('disclaimerDismissed') === '1'){
+      const db = document.getElementById('disclaimer-bar');
+      if(db) db.style.display = 'none';
+    }
+  } catch(e) {}
   // Set default report month to current month
   const rm = document.getElementById('report-month');
   if(rm) rm.value = new Date().toISOString().slice(0,7);
