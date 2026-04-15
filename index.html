@@ -3447,13 +3447,13 @@ function exportAgencySummary(){
     const marKey  = `${today}_${p.id}`;
     const marData = D.mar[marKey] || {};
     const ptMeds  = (D.meds||[]).filter(m => !m.patientId || m.patientId == p.id);
-    const vitals  = (D.vitals||[]).filter(v => v.date === today && v.patientId == p.id);
-    const incs    = (D.incidents||[]).filter(i => i.dt?.startsWith(today) && i.patientId == p.id);
-    const pain    = (D.pain||[]).filter(e => e.date === today && e.patientId == p.id);
-    const wounds  = (D.wounds||[]).filter(w => w.patientId == p.id && w.status !== 'Healed');
-    const intake  = (D.intake||[]).filter(e => e.date === today && e.patientId == p.id);
-    const behaviors = (D.behaviors||[]).filter(b => b.dt?.startsWith(today) && b.patientId == p.id);
-    const toileting = (D.toileting||[]).filter(t => t.date === today && t.patientId == p.id);
+    const vitals  = (D.vitals||[]).filter(v => v.date === today && (!v.patientId || v.patientId == p.id));
+    const incs    = (D.incidents||[]).filter(i => i.dt?.startsWith(today));
+    const pain    = (D.pain||[]).filter(e => e.date === today && (!e.patientId || e.patientId == p.id));
+    const wounds  = (D.wounds||[]).filter(w => (!w.patientId || w.patientId == p.id) && w.status !== 'Healed');
+    const intake  = (D.intake||[]).filter(e => e.date === today);
+    const behaviors = (D.behaviors||[]).filter(b => b.dt?.startsWith(today));
+    const toileting = (D.toileting||[]).filter(t => t.date === today);
     const fallLabel = p.fallRisk === 'high' ? '🔴 HIGH' : p.fallRisk === 'medium' ? '🟡 MEDIUM' : '🟢 LOW';
 
     // Meds table
@@ -4623,12 +4623,13 @@ function saveIncident(){
   const desc = document.getElementById('inc-desc').value.trim();
   if(!desc){ toast('Please describe the incident', 'var(--held)'); return; }
   const fields = {
-    dt:       document.getElementById('inc-dt').value || new Date().toISOString(),
-    severity: document.getElementById('inc-sev').value,
-    type:     document.getElementById('inc-type').value,
+    dt:        document.getElementById('inc-dt').value || new Date().toISOString(),
+    severity:  document.getElementById('inc-sev').value,
+    type:      document.getElementById('inc-type').value,
     desc,
-    action:   document.getElementById('inc-action').value.trim(),
-    reported: document.getElementById('inc-reported').value.trim()
+    action:    document.getElementById('inc-action').value.trim(),
+    reported:  document.getElementById('inc-reported').value.trim(),
+    patientId: document.getElementById('mar-patient')?.value || document.getElementById('patient-select')?.value || ''
   };
   if(_editIncidentId !== null){
     const idx = D.incidents.findIndex(x => x.id === _editIncidentId);
@@ -5205,12 +5206,13 @@ function saveIntake(){
   if(!type){ toast('Please select a type', 'var(--held)'); return; }
   const dateVal = document.getElementById('intake-date')?.value || new Date().toISOString().split('T')[0];
   const fields = {
-    date:  dateVal,
-    time:  document.getElementById('im-time')?.value || new Date().toTimeString().slice(0,5),
+    date:      dateVal,
+    time:      document.getElementById('im-time')?.value || new Date().toTimeString().slice(0,5),
     type,
-    pct:   document.getElementById('im-pct')?.value || '',
-    fluid: parseInt(document.getElementById('im-fluid')?.value || '0') || 0,
-    notes: document.getElementById('im-notes')?.value.trim() || ''
+    pct:       document.getElementById('im-pct')?.value || '',
+    fluid:     parseInt(document.getElementById('im-fluid')?.value || '0') || 0,
+    notes:     document.getElementById('im-notes')?.value.trim() || '',
+    patientId: document.getElementById('mar-patient')?.value || ''
   };
   if(!D.intake) D.intake = [];
   if(_editIntakeId !== null){
@@ -5614,7 +5616,8 @@ function saveBehavior(){
     antecedent:  document.getElementById('bm-antecedent')?.value.trim()  || '',
     behavior,
     consequence: document.getElementById('bm-consequence')?.value.trim() || '',
-    duration:    document.getElementById('bm-duration')?.value           || '< 5 minutes'
+    duration:    document.getElementById('bm-duration')?.value           || '< 5 minutes',
+    patientId:   document.getElementById('mar-patient')?.value || ''
   });
   D.behaviors.sort((a,b) => new Date(b.dt) - new Date(a.dt));
   save(); closeModal('behavior-modal');
@@ -5784,7 +5787,8 @@ function saveToileting(){
     amount:    document.getElementById('tl-amount')?.value    || 'Moderate',
     continent: document.getElementById('tl-continent')?.value || 'continent',
     product:   document.getElementById('tl-product')?.value   || '',
-    notes:     document.getElementById('tl-notes')?.value.trim() || ''
+    notes:     document.getElementById('tl-notes')?.value.trim() || '',
+    patientId: document.getElementById('mar-patient')?.value || ''
   });
   D.toileting.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
   save(); closeModal('toilet-modal');
