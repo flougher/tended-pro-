@@ -3739,18 +3739,18 @@ function renderMAR(){
       })() : ''}
       ${sorted.map(m => {
         const key = dateVal + '|' + (patientId||'default') + '|' + m.id;
-        // Overdue detection
-        const isToday_mar = dateVal === new Date().toISOString().split('T')[0];
-        const isOverdue_mar = isToday_mar && (rec.status||'pending') === 'pending' && m.time && (() => {
-          const [h,mn] = m.time.split(':').map(Number);
-          const nowMins = new Date().getHours()*60 + new Date().getMinutes();
-          return (h*60+(mn||0)) < nowMins - 30;
-        })();
         const rec = D.mar[key] || { status:'pending', timeGiven:'', initials:'' };
         const st  = rec.status || 'pending';
         const hasBBW = !!getBBW(m.name);
         const isRefused = st === 'refused';
         const hasRefusalDoc = isRefused && rec.refusalReason;
+        // Overdue detection — must be after rec is declared
+        const isToday_mar = dateVal === new Date().toISOString().split('T')[0];
+        const isOverdue_mar = isToday_mar && st === 'pending' && m.time && (() => {
+          const [h,mn] = m.time.split(':').map(Number);
+          const nowMins = new Date().getHours()*60 + new Date().getMinutes();
+          return (h*60+(mn||0)) < nowMins - 30;
+        })();
         const rowStyle_mar = hasBBW ? 'border-left:3px solid #C9963A;background:#FFFDF7;' : isRefused ? 'border-left:3px solid var(--refused);background:var(--refused-bg);' : isOverdue_mar ? 'border-left:3px solid #856404;background:#FFF3CD;' : '';
         return `<div class="mar-row-item" style="${rowStyle_mar}">
           <div>
