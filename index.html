@@ -7069,15 +7069,20 @@ function renderBBWDashboardAlert(){
 
   const alert = document.createElement('div');
   alert.id = 'dash-bbw-alert';
-  alert.style.cssText = 'background:#FFF8ED;border:2px solid #C9963A;border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;cursor:pointer';
+  alert.style.cssText = 'background:#FFF8ED;border:2px solid #C9963A;border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;cursor:pointer';
   alert.onclick = () => navTo('bbw');
   alert.innerHTML = `
-    <div style="width:40px;height:40px;background:#FFF3CD;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">⚠️</div>
-    <div style="flex:1;min-width:0">
-      <div style="font-weight:700;font-size:.9rem;color:#7A4A00">Black Box Warning${flagged.length>1?'s':''} Active — ${flagged.length} Medication${flagged.length>1?'s':''}</div>
-      <div style="font-size:.76rem;color:#A06020;margin-top:2px">${flagged.map(m=>m.name).join(', ')} · Tap to review warnings</div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+      <div style="width:40px;height:40px;background:#FFF3CD;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">⚠️</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.9rem;color:#7A4A00">Black Box Warning${flagged.length>1?'s':''} Active — ${flagged.length} Medication${flagged.length>1?'s':''}</div>
+        <div style="font-size:.76rem;color:#A06020;margin-top:2px">${flagged.map(m=>m.name).join(', ')} · Tap to review warnings</div>
+      </div>
+      <div style="font-size:.8rem;font-weight:700;color:#C9963A;white-space:nowrap">View →</div>
     </div>
-    <div style="font-size:.8rem;font-weight:700;color:#C9963A;white-space:nowrap">View →</div>`;
+    <div style="background:#FFFDF5;border-top:1px solid #E8C97A;padding-top:8px;font-size:.72rem;color:#92400E;line-height:1.6">
+      ⚕️ <strong>Disclaimer:</strong> Medication warnings are sourced from FDA drug label data and are for <strong>informational reference only</strong>. They do not constitute medical advice. Tended Health Pro is a documentation tool — not a medical device. Always follow your agency's protocols and physician orders.
+    </div>`;
 
   // Insert after shift banner
   banner.insertAdjacentElement('afterend', alert);
