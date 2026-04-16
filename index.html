@@ -2343,6 +2343,7 @@ body {
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="rpt-comms" checked> 📞 Comms</label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="rpt-careplan" checked> 📌 Care Plan</label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="rpt-billing" checked> 💳 Billing</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="rpt-shiftnotes" checked> 📝 Shift Notes</label>
       </div>
     </div>
   </div>
@@ -6559,7 +6560,13 @@ function renderReport(){
         <div style="background:#FFF3D0;border-radius:8px;padding:8px"><div style="font-size:1.2rem;font-weight:700;color:#C47A00;font-family:monospace">${bySev.moderate}</div><div style="font-size:.7rem;color:#8097B3">Moderate</div></div>
         <div style="background:#D1F5E8;border-radius:8px;padding:8px"><div style="font-size:1.2rem;font-weight:700;color:#0A7A4A;font-family:monospace">${bySev.minor}</div><div style="font-size:.7rem;color:#8097B3">Minor</div></div>
       </div>
-      ${inc.length?inc.map(i=>`<div style="font-size:.82rem;padding:5px 0;border-bottom:1px solid #D8E2EE;color:#526280"><strong>[${i.severity.toUpperCase()}] ${i.type}</strong> — ${new Date(i.dt).toLocaleDateString('en-US',{month:'short',day:'numeric'})} — ${i.desc.slice(0,80)}${i.desc.length>80?'…':''}</div>`).join(''):'<div style="font-size:.84rem;color:#8097B3">No incidents this month.</div>'}
+      ${inc.length ? inc.map(i=>`
+        <div style="padding:8px 0;border-bottom:1px solid #D8E2EE">
+          <div style="font-size:.82rem;font-weight:700;color:#0C1B33">[${i.severity.toUpperCase()}] ${i.type} — ${new Date(i.dt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+          <div style="font-size:.80rem;color:#526280;margin-top:3px;line-height:1.6">${i.desc}</div>
+          ${i.action?`<div style="font-size:.78rem;color:#0B7A6E;margin-top:3px">🔧 Action: ${i.action}</div>`:''}
+          ${i.reported?`<div style="font-size:.78rem;color:#8097B3;margin-top:2px">📣 Reported to: ${i.reported}</div>`:''}
+        </div>`).join('') : '<div style="font-size:.84rem;color:#8097B3">No incidents this month.</div>'}
     </div>`;
   }
 
@@ -6581,7 +6588,14 @@ function renderReport(){
   // Wounds
   if(check('rpt-wounds') && (D.wounds||[]).length){
     sections += `<div class="report-section"><div class="report-section-title">🩹 Wound Status</div>
-      ${D.wounds.map(w=>`<div style="font-size:.84rem;padding:6px 0;border-bottom:1px solid #D8E2EE;color:#526280"><strong>${w.location}</strong> — ${w.type} — ${(w.stage||''). split(' — ')[0]||'Unspecified'} — Status: <strong style="color:${w.status==='Worsening'?'#C0392B':w.status==='Improving'?'#0A7A4A':'#526280'}">${w.status}</strong>${w.treatment?' | Treatment: '+w.treatment:''}</div>`).join('')}
+      ${D.wounds.map(w=>`
+        <div style="padding:8px 0;border-bottom:1px solid #D8E2EE">
+          <div style="font-size:.82rem;font-weight:700;color:#0C1B33">${w.location} — ${w.type}</div>
+          <div style="font-size:.80rem;color:#526280;margin-top:2px">Stage: ${(w.stage||'').split(' — ')[0]||'Unspecified'} · Size: ${w.size||'—'} · Status: <strong style="color:${w.status==='Worsening'?'#C0392B':w.status==='Improving'?'#0A7A4A':'#526280'}">${w.status}</strong></div>
+          ${w.treatment?`<div style="font-size:.78rem;color:#0B7A6E;margin-top:2px">🔧 Treatment: ${w.treatment}</div>`:''}
+          ${w.notes?`<div style="font-size:.78rem;color:#526280;margin-top:2px;font-style:italic">${w.notes}</div>`:''}
+          ${w.closedAt?`<div style="font-size:.74rem;color:#0A7A4A;margin-top:2px">✓ Closed: ${new Date(w.closedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>`:''}
+        </div>`).join('')}
     </div>`;
   }
 
@@ -6620,18 +6634,28 @@ function renderReport(){
   if(check('rpt-comms')){
     const commsMonth = (D.comms||[]).filter(c=>inMonth(c.dt?.split('T')[0]));
     sections += `<div class="report-section"><div class="report-section-title">📞 Family Communications (${commsMonth.length})</div>
-      ${commsMonth.length?commsMonth.map(c=>`<div style="font-size:.82rem;padding:5px 0;border-bottom:1px solid #D8E2EE;color:#526280"><strong>${c.contact}</strong>${c.relation?' ('+c.relation+')':''} — ${c.method} — ${new Date(c.dt).toLocaleDateString('en-US',{month:'short',day:'numeric'})} — ${c.summary.slice(0,80)}${c.summary.length>80?'…':''}</div>`).join(''):'<div style="font-size:.84rem;color:#8097B3">No communications logged this month.</div>'}
+      ${commsMonth.length ? commsMonth.map(cm=>`
+        <div style="padding:8px 0;border-bottom:1px solid #D8E2EE">
+          <div style="font-size:.82rem;font-weight:700;color:#0C1B33">${cm.contact}${cm.relation?' ('+cm.relation+')':''} — ${cm.method}</div>
+          <div style="font-size:.76rem;color:#8097B3;margin-top:1px">${new Date(cm.dt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+          <div style="font-size:.80rem;color:#526280;margin-top:3px;line-height:1.6">${cm.summary}</div>
+          ${cm.followup?`<div style="font-size:.78rem;color:#0B7A6E;margin-top:3px">📌 Follow-up: ${cm.followup}</div>`:''}
+        </div>`).join('') : '<div style="font-size:.84rem;color:#8097B3">No communications logged this month.</div>'}
     </div>`;
   }
 
   // Care plan summary
   if(check('rpt-careplan') && D.careplan?.goals){
     sections += `<div class="report-section"><div class="report-section-title">📌 Goals of Care</div>
-      <div style="font-size:.84rem;color:#526280;line-height:1.7">
-        ${D.careplan.goals?`<div><strong>Goals:</strong> ${D.careplan.goals}</div>`:''}
-        ${D.careplan.dnr?`<div><strong>Code Status:</strong> ${D.careplan.dnr}</div>`:''}
-        ${D.careplan.mobility?`<div><strong>Mobility:</strong> ${D.careplan.mobility}</div>`:''}
-        ${D.careplan.diet?`<div><strong>Dietary:</strong> ${D.careplan.diet}</div>`:''}
+      <div style="font-size:.84rem;color:#526280;line-height:1.8">
+        ${D.careplan.goals?`<div style="margin-bottom:4px"><strong>Goals:</strong> ${D.careplan.goals}</div>`:''}
+        ${D.careplan.dnr?`<div style="margin-bottom:4px"><strong>Code Status:</strong> ${D.careplan.dnr}</div>`:''}
+        ${D.careplan.mobility?`<div style="margin-bottom:4px"><strong>Mobility:</strong> ${D.careplan.mobility}</div>`:''}
+        ${D.careplan.diet?`<div style="margin-bottom:4px"><strong>Dietary:</strong> ${D.careplan.diet}</div>`:''}
+        ${D.careplan.pain?`<div style="margin-bottom:4px"><strong>Pain Management:</strong> ${D.careplan.pain}</div>`:''}
+        ${D.careplan.sleep?`<div style="margin-bottom:4px"><strong>Sleep:</strong> ${D.careplan.sleep}</div>`:''}
+        ${D.careplan.comfort?`<div style="margin-bottom:4px"><strong>Comfort &amp; Preferences:</strong> ${D.careplan.comfort}</div>`:''}
+        ${D.careplan.notes?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid #D8E2EE;font-style:italic">${D.careplan.notes}</div>`:''}
       </div>
     </div>`;
   }
@@ -6643,6 +6667,21 @@ function renderReport(){
     const earned = billMonth.reduce((s,b)=>s+(b.earned||0),0);
     sections += `<div class="report-section"><div class="report-section-title">💳 Billing Summary</div>
       <div style="font-size:.84rem;color:#526280">Visits: ${billMonth.length} · Hours: ${Math.round(hrs*10)/10}h · Earned: $${earned.toFixed(2)}</div>
+    </div>`;
+  }
+
+  // Shift Notes narrative
+  if(check('rpt-shiftnotes')){
+    const allNotes = JSON.parse(localStorage.getItem('tendedPro_shiftNotes') || '{}');
+    const monthNotes = Object.entries(allNotes)
+      .filter(([date]) => date >= monthStart && date <= monthEnd)
+      .sort(([a],[b]) => a.localeCompare(b));
+    sections += `<div class="report-section"><div class="report-section-title">📝 Shift Notes (${monthNotes.length} entries)</div>
+      ${monthNotes.length ? monthNotes.map(([date, note]) => `
+        <div style="padding:8px 0;border-bottom:1px solid #D8E2EE">
+          <div style="font-size:.78rem;font-weight:700;color:#0B7A6E;margin-bottom:3px">${new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}</div>
+          <div style="font-size:.82rem;color:#526280;line-height:1.7;white-space:pre-wrap">${note}</div>
+        </div>`).join('') : '<div style="font-size:.84rem;color:#8097B3">No shift notes recorded this month.</div>'}
     </div>`;
   }
 
