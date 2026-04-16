@@ -1407,6 +1407,12 @@ body {
     <button class="btn btn-teal" onclick="openPatientModal()">+ Add Patient</button>
   </div>
 
+  <!-- Patient photo privacy note -->
+  <div style="display:flex;align-items:flex-start;gap:10px;background:#F0F4F8;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:var(--slate-mid);line-height:1.6">
+    <span style="font-size:1rem;flex-shrink:0">🔒</span>
+    <span><strong style="color:var(--navy)">Patient photos are not stored.</strong> To protect patient dignity and maintain HIPAA compliance, Tended Health Pro identifies patients by name, room number, and a color-coded initial avatar — never by photo. This keeps all personally identifiable biometric data off your device and eliminates any risk of accidental photo exposure. Follow your agency's policy for any photo identification requirements.</span>
+  </div>
+
   <div id="patient-list"></div>
 
   <!-- Patient detail (hidden by default) -->
@@ -1801,6 +1807,13 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openModal('wound-modal')">+ Add Wound</button>
   </div>
+
+  <!-- Privacy note re: no photos -->
+  <div style="display:flex;align-items:flex-start;gap:10px;background:#F0F4F8;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:var(--slate-mid);line-height:1.6">
+    <span style="font-size:1rem;flex-shrink:0">🔒</span>
+    <span><strong style="color:var(--navy)">Photo documentation not included.</strong> To protect patient privacy and maintain HIPAA compliance, Tended Health Pro does not store wound photos. Use detailed written descriptions, measurements, and staging to document wound status. Follow your agency's protocol for photo documentation using approved secure equipment.</span>
+  </div>
+
   <div id="wound-list">
     <div class="empty"><div class="empty-icon">🩹</div><div class="empty-text">No wounds or skin conditions documented.<br>Tap + Add Wound to start tracking.</div></div>
   </div>
