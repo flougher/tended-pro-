@@ -1604,12 +1604,6 @@ body {
       <div id="settings-saved-msg" style="display:none;text-align:center;font-size:.78rem;color:var(--given);margin-top:8px">✅ Profile saved successfully</div>
     </div>
     <div>
-      <div class="card" style="margin-bottom:16px">
-        <div class="card-title">💊 Shared Medication List</div>
-        <p style="font-size:.82rem;color:var(--slate-light);margin-bottom:12px;line-height:1.6">All phases share one medication list per profile. Expand in a future update for per-patient lists.</p>
-        <button class="btn btn-teal btn-sm" onclick="openModal('med-modal')">+ Add Medication</button>
-        <div id="med-list" style="margin-top:12px"></div>
-      </div>
       <div class="card">
         <div class="card-title">💾 Data Management</div>
 
@@ -1657,10 +1651,6 @@ body {
         <!-- Buttons -->
         <div style="display:flex;flex-direction:column;gap:8px">
           <button class="btn btn-teal btn-sm" style="justify-content:center" onclick="exportData()">📤 Export All Data (JSON)</button>
-          <button class="btn btn-secondary btn-sm" style="justify-content:center;border-color:var(--teal);color:var(--teal)" onclick="exportAgencySummary()">📋 Export Daily Summary PDF (Agency)</button>
-          <div style="font-size:.72rem;color:var(--slate-light);line-height:1.6;padding:8px 10px;background:var(--off-white);border-radius:var(--r);border:1px solid var(--border);margin-top:2px">
-            ⚕️ <strong style="color:var(--slate-mid)">HIPAA Notice:</strong> This summary contains Protected Health Information (PHI). Save to your device only. Share exclusively through your agency's approved secure channel. Do not send via standard email or unencrypted messaging.
-          </div>
           <button class="btn btn-secondary btn-sm" style="justify-content:center" onclick="document.getElementById('import-file').click()">📥 Import Backup</button>
           <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
           <button class="btn btn-secondary btn-sm" style="justify-content:center;border-color:var(--teal);color:var(--teal)" onclick="confirmLoadDemo()">🧪 Load Demo Data</button>
@@ -4891,7 +4881,6 @@ function loadSettings(){
   set('set-role',       s.role);
   set('set-initials',   s.initials);
   set('set-supervisor', s.supervisor);
-  renderMedList();
   if(typeof renderPremiumCard === 'function') renderPremiumCard();
   renderProfileCompletion();
   // Clear dirty state on load
