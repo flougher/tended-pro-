@@ -1072,9 +1072,10 @@ body {
   <div style="background:var(--white);border-radius:20px;padding:40px 36px;max-width:540px;width:100%;box-shadow:0 24px 64px rgba(12,27,51,.4);text-align:center;animation:welcomeFadeIn .4s ease">
     <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--teal-mid),var(--teal-bright));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 20px">🏥</div>
     <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:var(--navy);margin-bottom:8px">Welcome to Tended Health Pro</div>
-    <div style="font-size:.92rem;color:var(--slate-mid);line-height:1.7;margin-bottom:28px">Professional caregiver documentation for every shift. Would you like to load a <strong style="color:var(--teal)">sample patient</strong> to explore all 18 sections — or start fresh?</div>
+    <div style="font-size:.92rem;color:var(--slate-mid);line-height:1.7;margin-bottom:6px">Professional shift documentation for <strong style="color:var(--navy)">CNAs, HHAs, and direct care workers.</strong></div>
+    <div style="font-size:.84rem;color:var(--slate-light);line-height:1.6;margin-bottom:24px">MAR · Incidents · Vitals · Wound Tracker · Behavior Log · Billing · Monthly Report — all in one secure offline app.</div>
     <div style="background:var(--off-white);border-radius:14px;padding:18px;margin-bottom:24px;text-align:left">
-      <div style="font-size:.8rem;font-weight:600;color:var(--slate-mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Sample patient includes:</div>
+      <div style="font-size:.8rem;font-weight:600;color:var(--slate-mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Load sample patient to explore all sections:</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;font-size:.82rem;color:var(--navy)">
         <div>✅ Patient profile</div><div>✅ MAR with 4 meds</div>
         <div>✅ 3 incidents</div><div>✅ Care plan</div>
@@ -1082,7 +1083,7 @@ body {
         <div>✅ Family comms</div><div>✅ Morning routines</div>
         <div>✅ 3 triggers</div><div>✅ ABC behaviors</div>
         <div>✅ Toileting log</div><div>✅ Credentials</div>
-        <div>✅ Billing entries</div><div>✅ Trends data</div>
+        <div>✅ Billing entries</div><div>✅ Vital signs</div>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">
@@ -1093,7 +1094,7 @@ body {
         Start Fresh — I'll add my own patients
       </button>
     </div>
-    <div style="margin-top:16px;font-size:.74rem;color:var(--slate-light)">You can load demo data any time from Settings → Load Demo Data</div>
+    <div style="margin-top:16px;font-size:.74rem;color:var(--slate-light)">⚕️ All data stays on your device only — no cloud, no login required</div>
   </div>
 </div>
 
@@ -1102,15 +1103,16 @@ body {
   <div class="paywall-modal">
     <div class="paywall-icon">⭐</div>
     <div class="paywall-title">Unlock Tended Health Pro</div>
-    <div class="paywall-sub">Your 10-day free trial has ended. Unlock full access — one-time purchase, no subscription.</div>
+    <div class="paywall-sub">Your 10-day free trial has ended. Unlock complete professional documentation — <strong>one-time purchase, no subscription, no recurring fees.</strong></div>
     <div class="paywall-features">
-      <div>✅ All 18 sections</div><div>✅ MAR & medications</div>
+      <div>✅ Full MAR logging</div><div>✅ FDA BBW alerts</div>
       <div>✅ Wound tracker</div><div>✅ Incident log</div>
-      <div>✅ Behavior tracking</div><div>✅ Monthly reports</div>
-      <div>✅ Billing & hours</div><div>✅ Voice to text</div>
-      <div>✅ Print templates</div><div>✅ Credentials log</div>
+      <div>✅ Vital signs & alerts</div><div>✅ PDF daily summary</div>
+      <div>✅ Monthly report</div><div>✅ Billing & hours</div>
+      <div>✅ Voice to text</div><div>✅ 19 total sections</div>
     </div>
-    <div class="paywall-price">$14.99 <span>one-time</span></div>
+    <div style="font-size:.76rem;color:var(--slate-light);margin-bottom:14px;line-height:1.6">🔒 All data stays on your device only — no cloud, no account required</div>
+    <div class="paywall-price">$14.99 <span>one-time · pay once, use forever</span></div>
     <button class="paywall-btn" onclick="triggerGooglePlayPurchase()">🔓 Unlock Now — $14.99</button>
     <button class="paywall-btn secondary" onclick="closePaywall()">Continue browsing (limited)</button>
     <div class="paywall-restore" onclick="restorePremium()">Already purchased? Restore access</div>
