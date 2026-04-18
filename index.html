@@ -7243,6 +7243,18 @@ function buildSampleData(){
         triggers:'Change in routine — different aide for dinner.',
         interventions:'Introduced self clearly. Used familiar greeting. Offered tea.',
         effectiveness:'Very effective — resolved quickly',
+        notified:'' },
+      { id:15003, patientId:pid, date:dStr(-3), time:'18:10', duration:'1–2 hours', severity:'severe',
+        behaviors:'Highly agitated. Attempted to leave room repeatedly. Verbally combative. Screaming for daughter. Refused all care.',
+        triggers:'Loud announcement over intercom. New staff member on shift. Skipped afternoon rest.',
+        interventions:'Closed door to reduce noise. Called daughter Linda by phone — resident calmed hearing her voice. Dimmed lights. Moved rocking chair to hallway window.',
+        effectiveness:'Somewhat effective — gradual improvement',
+        notified:'Charge Nurse Martinez, Supervisor RN Stanton, Daughter Linda Flores (702-555-0182)' },
+      { id:15004, patientId:pid, date:dStr(-5), time:'17:00', duration:'< 15 minutes', severity:'mild',
+        behaviors:'Mild restlessness. Asked about dinner time repeatedly. Slightly confused.',
+        triggers:'Overcast day — poor natural light. Slightly late dinner.',
+        interventions:'Turned on extra lamp. Gave small snack. Reassured dinner coming soon.',
+        effectiveness:'Very effective — resolved quickly',
         notified:'' }
     ],
     wandering: [
@@ -7252,7 +7264,21 @@ function buildSampleData(){
         condition:'Confused but calm. In nightgown. No injury.',
         action:'Gently redirected to room. Offered warm milk. Ensured bed alarm was set.',
         notified:'Charge Nurse Martinez, Supervisor RN Stanton',
-        prevention:'Bed alarm reactivated. Door alarm checked. Room reassessed for safety.' }
+        prevention:'Bed alarm reactivated. Door alarm checked. Room reassessed for safety.' },
+      { id:16002, patientId:pid, date:dStr(-4), time:'14:30', type:'Wandering — entered restricted area', isElopement:false,
+        location:'Staff break room — resident entered through propped door',
+        duration:'Approximately 3 minutes',
+        condition:'Calm, no distress. Said she was "looking for the kitchen."',
+        action:'Escorted back to common area. Offered afternoon snack. Door to break room secured.',
+        notified:'Charge Nurse Martinez',
+        prevention:'Break room door secured with keypad. Resident room moved further from staff corridor.' },
+      { id:16003, patientId:pid, date:dStr(-7), time:'03:45', type:'Elopement attempt — intercepted', isElopement:true,
+        location:'Main entrance — front door alarm activated',
+        duration:'Approximately 12 minutes unobserved',
+        condition:'Distressed. Dressed in coat over nightgown. Carrying purse. Stated "I need to get home to my children."',
+        action:'Gently intercepted at door. Escorted to quiet lounge. Offered tea. Called daughter Linda. Incident report filed.',
+        notified:'Charge Nurse Martinez, Supervisor RN Stanton, DON, Daughter Linda Flores, Son Robert Thompson',
+        prevention:'Coded door access reviewed. Additional door alarm installed. Care plan updated. 1:1 monitoring during high-risk hours 2am–5am.' }
     ],
     memorycare: [
       { id:17001, patientId:pid, date:todayISO, shift:'Morning (7am–3pm)',
@@ -7261,7 +7287,21 @@ function buildSampleData(){
         avoid:'Do not mention late husband Harold. Avoid rushing during personal care. TV news causes anxiety.',
         calming:'Chopin piano music. Rosary beads. Rocking chair by window. Warm blanket.',
         communication:'Use simple one-step instructions. Gentle touch on shoulder before speaking. Never correct — redirect instead. Speak slowly and maintain eye contact.',
-        activities:'Enjoyed sorting laundry. Looked at photo album. Watched Jeopardy at 7pm — knows many answers.' }
+        activities:'Enjoyed sorting laundry. Looked at photo album. Watched Jeopardy at 7pm — knows many answers.' },
+      { id:17002, patientId:pid, date:dStr(-1), shift:'Afternoon (3pm–11pm)',
+        mood:'😟 Difficult — agitated or withdrawn',
+        worked:'Singing old hymns together. Talking about her children when they were young. Showing her rosary and saying it together.',
+        avoid:'Mirrors in hallway — sees unfamiliar reflection, becomes frightened. Do not mention memory care unit by name.',
+        calming:'Gentle hand massage with lavender lotion. Turning all mirrors away. Soft lighting. Quiet room away from common area.',
+        communication:'Speak in short, simple sentences. Never argue or try to orient to reality — redirect gently. Use her name frequently. Approach from the front, never from behind.',
+        activities:'Folding towels (finds repetitive tasks calming). Listening to Rosemary Clooney. Looking at her wedding photo album.' },
+      { id:17003, patientId:pid, date:dStr(-3), shift:'Morning (7am–3pm)',
+        mood:'😊 Good — calm, engaged, cooperative',
+        worked:'Today was a great morning. She remembered the CNA name from yesterday. Engaged well during breakfast. Accepted all personal care without resistance.',
+        avoid:'Busy common areas during lunch — becomes overwhelmed by noise and activity.',
+        calming:'When overstimulated — move to quiet sunroom. White noise machine helpful at night.',
+        communication:'On good days she responds to humor and light conversation about her past as a schoolteacher. Ask her about her favorite students.',
+        activities:'Helped fold napkins for dining room — felt purposeful and proud. Completed entire puzzle of country cottage scene.' }
     ]
   };
 }
