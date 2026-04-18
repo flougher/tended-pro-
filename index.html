@@ -1592,9 +1592,10 @@ body {
   <div style="background:#FFF8EC;border:1.5px solid #C9963A;border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:#92400E;line-height:1.6">
     🌅 <strong>About Sundowning:</strong> Sundowning (late-day confusion) typically occurs in the late afternoon or evening in patients with dementia or Alzheimer's. Document episodes to identify patterns and improve care planning. Always notify your supervisor of severe episodes.
   </div>
-  <div id="sundowning-date-nav" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+  <div id="sundowning-date-nav" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
     <label style="font-size:.82rem;color:var(--slate-mid);font-weight:600">Date:</label>
     <input type="date" id="sundowning-date" style="border:1.5px solid var(--border);border-radius:var(--r);padding:7px 11px;font-family:var(--font-body);font-size:.84rem;background:white" onchange="renderSundowning()">
+    <button class="btn btn-secondary btn-sm" onclick="toggleSundowningAll()" id="sd-all-btn" style="font-size:.76rem">📋 Show All</button>
   </div>
   <div id="sundowning-list"></div>
 </div>
@@ -7311,6 +7312,7 @@ function loadSamplePatient(){
   localStorage.setItem('tendedPro_welcomed', '1');
   const sample = buildSampleData();
   D = Object.assign(D, sample);
+  _sdShowAll = true; // Show all sundowning entries after loading sample
   save();
   updateTopbar(); updateTopbarUser(); renderDashboard();
   toast('✅ Sample patient Margaret Thompson loaded!', 'var(--given)');
@@ -7343,6 +7345,9 @@ function confirmLoadDemo(){
   D.sundowning = [...(sample.sundowning||[]), ...(D.sundowning||[])];
   D.wandering  = [...(sample.wandering||[]),  ...(D.wandering||[])];
   D.memorycare = [...(sample.memorycare||[]), ...(D.memorycare||[])];
+  _sdShowAll = true; // Show all sundowning entries after loading demo
+  const sdAllBtn = document.getElementById('sd-all-btn');
+  if(sdAllBtn) sdAllBtn.textContent = '📅 Show by Date';
   if(!D.careplan || !D.careplan.pid) D.careplan = sample.careplan;
   if(!D.settings.name) D.settings = sample.settings;
   save(); updateTopbar(); updateTopbarUser(); renderDashboard();
@@ -8012,12 +8017,21 @@ function saveSundowning(){
   renderSundowning();
 }
 
+let _sdShowAll = false;
+function toggleSundowningAll(){
+  _sdShowAll = !_sdShowAll;
+  const btn = document.getElementById('sd-all-btn');
+  if(btn) btn.textContent = _sdShowAll ? '📅 Show by Date' : '📋 Show All';
+  renderSundowning();
+}
+
 function renderSundowning(){
   const el = document.getElementById('sundowning-list');
   if(!el) return;
   const dateVal = document.getElementById('sundowning-date')?.value || new Date().toISOString().split('T')[0];
-  const entries = (D.sundowning||[]).filter(e => e.date === dateVal);
-  const allCount = (D.sundowning||[]).length;
+  const allEntries = D.sundowning||[];
+  const entries = _sdShowAll ? allEntries : allEntries.filter(e => e.date === dateVal);
+  const allCount = allEntries.length;
 
   if(!allCount){
     el.innerHTML = '<div class="empty"><div class="empty-icon">🌅</div><div class="empty-text">No sundowning episodes logged yet.<br>Tap + Log Episode to document an event.</div></div>';
