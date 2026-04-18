@@ -3002,6 +3002,16 @@ function openModal(id){
 function closeModal(id){
   const el = document.getElementById(id);
   if(el) el.classList.remove('open');
+  // Reset edit IDs when modal is closed
+  const resetMap = {
+    'behavior-modal':   () => { _editBehaviorId   = null; const t=document.querySelector('#behavior-modal .modal-title');   if(t) t.textContent='Log Behavior'; },
+    'toilet-modal':     () => { _editToiletId      = null; const t=document.querySelector('#toilet-modal .modal-title');     if(t) t.textContent='Log Toileting'; },
+    'vitals-modal':     () => { _editVitalsId      = null; const t=document.querySelector('#vitals-modal .modal-title');     if(t) t.textContent='Log Vital Signs'; const b=document.getElementById('vm-save-btn'); if(b) b.textContent='Save Vitals'; },
+    'sundowning-modal': () => { _editSundownId     = null; const t=document.querySelector('#sundowning-modal .modal-title'); if(t) t.textContent='🌅 Log Sundowning Episode'; const b=document.querySelector('#sundowning-modal .btn-teal'); if(b) b.textContent='Save Episode'; },
+    'wandering-modal':  () => { _editWanderingId   = null; const t=document.querySelector('#wandering-modal .modal-title');  if(t) t.textContent='🚶 Log Wandering / Elopement Incident'; const b=document.querySelector('#wandering-modal .btn-teal'); if(b) b.textContent='Save Incident'; },
+    'memorycare-modal': () => { _editMemoryCareId  = null; const t=document.querySelector('#memorycare-modal .modal-title'); if(t) t.textContent='💬 Add Memory Care Note'; const b=document.querySelector('#memorycare-modal .btn-teal'); if(b) b.textContent='Save Note'; },
+  };
+  if(resetMap[id]) resetMap[id]();
 }
 
 // ── Navigation ─────────────────────────────────────────────────
@@ -5871,8 +5881,7 @@ function saveBehavior(){
   const behavior = document.getElementById('bm-behavior')?.value.trim();
   if(!behavior){ toast('Please describe the behavior', 'var(--held)'); return; }
   if(!D.behaviors) D.behaviors = [];
-  D.behaviors.push({
-    id:          Date.now(),
+  const fields = {
     dt:          document.getElementById('bm-dt')?.value || new Date().toISOString(),
     severity:    document.getElementById('bm-severity')?.value  || 'mild',
     type:        document.getElementById('bm-type')?.value      || 'Other',
@@ -5882,16 +5891,25 @@ function saveBehavior(){
     consequence: document.getElementById('bm-consequence')?.value.trim() || '',
     duration:    document.getElementById('bm-duration')?.value           || '< 5 minutes',
     patientId:   document.getElementById('mar-patient')?.value || ''
-  });
+  };
+  if(_editBehaviorId !== null){
+    const idx = D.behaviors.findIndex(x => x.id === _editBehaviorId);
+    if(idx !== -1) D.behaviors[idx] = { ...D.behaviors[idx], ...fields };
+    toast('✅ Behavior updated', 'var(--given)');
+    _editBehaviorId = null;
+  } else {
+    D.behaviors.push({ id: Date.now(), ...fields });
+    toast('✅ Behavior logged', 'var(--given)');
+  }
   D.behaviors.sort((a,b) => new Date(b.dt) - new Date(a.dt));
   save(); closeModal('behavior-modal');
-  // Reset
   ['bm-antecedent','bm-behavior','bm-consequence'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('bm-severity').value = 'mild';
   document.getElementById('bm-dt').value = '';
   const tl = document.getElementById('bm-trigger-link'); if(tl) tl.value = '';
+  const title = document.querySelector('#behavior-modal .modal-title');
+  if(title) title.textContent = 'Log Behavior';
   renderBehaviorLog();
-  toast('✅ Behavior logged', 'var(--given)');
 }
 
 function populateBehaviorTriggerDropdown(){
@@ -5921,7 +5939,8 @@ function renderBehaviorLog(){
         </div>
         <div style="display:flex;gap:4px;align-items:center">
           <span style="font-family:var(--font-mono);font-size:.74rem;color:var(--slate-light)">${dt.toLocaleDateString('en-US',{month:'short',day:'numeric'})} ${dt.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span>
-          <button class="btn btn-danger btn-xs btn-icon" style="margin-left:4px" onclick="deleteBehavior(${b.id})">✕</button>
+          <button class="btn btn-secondary btn-xs" style="margin-left:4px;font-size:.68rem;padding:2px 7px" onclick="editBehavior(${b.id})">✏️</button>
+          <button class="btn btn-danger btn-xs btn-icon" style="margin-left:2px" onclick="deleteBehavior(${b.id})">✕</button>
         </div>
       </div>
       ${linkedTrigger ? `<div style="background:rgba(196,122,0,.07);border:1px solid rgba(196,122,0,.25);border-radius:var(--r-sm);padding:7px 10px;margin-bottom:10px;font-size:.78rem">
@@ -6025,6 +6044,25 @@ function renderBehaviorSummary(){
     </div>`;
 }
 
+function editBehavior(id){
+  const b = (D.behaviors||[]).find(x => x.id === id);
+  if(!b) return;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('bm-dt', b.dt);
+  set('bm-severity', b.severity);
+  set('bm-type', b.type);
+  set('bm-trigger-link', b.triggerId||'');
+  set('bm-antecedent', b.antecedent);
+  set('bm-behavior', b.behavior);
+  set('bm-consequence', b.consequence);
+  set('bm-duration', b.duration);
+  _editBehaviorId = id;
+  const title = document.querySelector('#behavior-modal .modal-title');
+  if(title) title.textContent = 'Edit Behavior';
+  openModal('behavior-modal');
+}
+let _editBehaviorId = null;
+
 function deleteBehavior(id){
   if(!confirm('Delete this behavior record?')) return;
   D.behaviors = (D.behaviors||[]).filter(x => x.id !== id);
@@ -6043,8 +6081,7 @@ function saveToileting(){
   if(!type){ toast('Please select a type', 'var(--held)'); return; }
   const dateVal = document.getElementById('toilet-date')?.value || new Date().toISOString().split('T')[0];
   if(!D.toileting) D.toileting = [];
-  D.toileting.push({
-    id:        Date.now(),
+  const fields = {
     date:      dateVal,
     time:      document.getElementById('tl-time')?.value || new Date().toTimeString().slice(0,5),
     type,
@@ -6053,13 +6090,23 @@ function saveToileting(){
     product:   document.getElementById('tl-product')?.value   || '',
     notes:     document.getElementById('tl-notes')?.value.trim() || '',
     patientId: document.getElementById('mar-patient')?.value || ''
-  });
+  };
+  if(_editToiletId !== null){
+    const idx = D.toileting.findIndex(x => x.id === _editToiletId);
+    if(idx !== -1) D.toileting[idx] = { ...D.toileting[idx], ...fields };
+    toast('✅ Toileting entry updated', 'var(--given)');
+    _editToiletId = null;
+  } else {
+    D.toileting.push({ id: Date.now(), ...fields });
+    toast('✅ Toileting entry logged', 'var(--given)');
+  }
   D.toileting.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
   save(); closeModal('toilet-modal');
   document.getElementById('tl-notes').value = '';
   document.getElementById('tl-time').value  = '';
+  const title = document.querySelector('#toilet-modal .modal-title');
+  if(title) title.textContent = 'Log Toileting';
   renderToileting();
-  toast('✅ Toileting entry logged', 'var(--given)');
 }
 
 function renderToileting(){
@@ -6097,9 +6144,28 @@ function renderToileting(){
       </div>
       <div style="font-size:.78rem;font-weight:600;color:${contColor[e.continent]||'var(--slate)'}">${contLabel[e.continent]||e.continent}</div>
       <div style="font-size:.76rem;color:var(--slate-light)">${e.product||'—'}</div>
-      <div><button class="btn btn-danger btn-xs btn-icon" onclick="deleteToileting(${e.id})">✕</button></div>
+      <div style="display:flex;gap:3px"><button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px" onclick="editToileting(${e.id})">✏️</button><button class="btn btn-danger btn-xs btn-icon" onclick="deleteToileting(${e.id})">✕</button></div>
     </div>`).join('');
 }
+
+function editToileting(id){
+  const e = (D.toileting||[]).find(x => x.id === id);
+  if(!e) return;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('tl-time', e.time);
+  set('tl-type', e.type);
+  set('tl-amount', e.amount);
+  set('tl-continent', e.continent);
+  set('tl-product', e.product);
+  set('tl-notes', e.notes);
+  const dateEl = document.getElementById('toilet-date');
+  if(dateEl) dateEl.value = e.date;
+  _editToiletId = id;
+  const title = document.querySelector('#toilet-modal .modal-title');
+  if(title) title.textContent = 'Edit Toileting Entry';
+  openModal('toilet-modal');
+}
+let _editToiletId = null;
 
 function deleteToileting(id){
   D.toileting = (D.toileting||[]).filter(x => x.id !== id);
@@ -7457,22 +7523,31 @@ function saveVitals(){
   // Auto-generate clinical alerts
   entry.alerts = vitalsAlerts(entry);
 
-  D.vitals.push(entry);
+  if(_editVitalsId !== null){
+    const idx = D.vitals.findIndex(x => x.id === _editVitalsId);
+    if(idx !== -1) D.vitals[idx] = { ...D.vitals[idx], ...entry, id: _editVitalsId };
+    _editVitalsId = null;
+    const title = document.querySelector('#vitals-modal .modal-title');
+    if(title) title.textContent = 'Log Vital Signs';
+    const btn = document.getElementById('vm-save-btn');
+    if(btn) btn.textContent = 'Save Vitals';
+    toast('✅ Vitals updated', 'var(--given)');
+  } else {
+    D.vitals.push(entry);
+    if(entry.alerts.length){
+      toast(`⚠️ ${entry.alerts.length} alert${entry.alerts.length>1?'s':''} — review vitals`, 'var(--refused)');
+    } else {
+      toast('✅ Vitals recorded', 'var(--given)');
+    }
+  }
   D.vitals.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
-  save();
-  closeModal('vitals-modal');
-  // Reset form
+  save(); closeModal('vitals-modal');
   ['vm-bp-sys','vm-bp-dia','vm-pulse','vm-resp','vm-temp','vm-spo2','vm-glucose','vm-weight','vm-notes'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
   document.getElementById('vm-position').value = '';
   renderVitals();
   renderVitalsDashboardAlert();
-  if(entry.alerts.length){
-    toast(`⚠️ ${entry.alerts.length} alert${entry.alerts.length>1?'s':''} — review vitals`, 'var(--refused)');
-  } else {
-    toast('✅ Vitals recorded', 'var(--given)');
-  }
 }
 
 function vitalsAlerts(v){
@@ -7611,6 +7686,7 @@ function renderVitals(){
           ${patient ? `<span style="font-size:.76rem;color:var(--teal);margin-left:8px">👤 ${patient.fname} ${patient.lname}</span>` : ''}
           ${e.position ? `<span style="font-size:.72rem;color:var(--slate-light);margin-left:6px">${e.position}</span>` : ''}
         </div>
+        <button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px;margin-right:3px" onclick="editVitals(${e.id})">✏️</button>
         <button class="btn btn-danger btn-xs btn-icon" onclick="deleteVitals(${e.id})">✕</button>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:${hasAlerts||e.notes?'8px':'0'}">
@@ -7627,6 +7703,31 @@ function renderVitals(){
     </div>`;
   }).join('');
 }
+
+function editVitals(id){
+  const e = (D.vitals||[]).find(x => x.id === id);
+  if(!e) return;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('vm-date',   e.date);
+  set('vm-time',   e.time);
+  set('vm-bp-sys', e.bpSys||'');
+  set('vm-bp-dia', e.bpDia||'');
+  set('vm-pulse',  e.pulse||'');
+  set('vm-temp',   e.temp||'');
+  set('vm-spo2',   e.spo2||'');
+  set('vm-glucose',e.glucose||'');
+  set('vm-weight', e.weight||'');
+  set('vm-position',e.position||'');
+  set('vm-notes',  e.notes||'');
+  set('vm-patient',e.patientId||'');
+  _editVitalsId = id;
+  const title = document.querySelector('#vitals-modal .modal-title');
+  if(title) title.textContent = 'Edit Vital Signs';
+  const btn = document.getElementById('vm-save-btn');
+  if(btn) btn.textContent = 'Update Vitals';
+  openModal('vitals-modal');
+}
+let _editVitalsId = null;
 
 function deleteVitals(id){
   if(!confirm('Delete this vitals entry?')) return;
@@ -7840,8 +7941,7 @@ function saveSundowning(){
   const time = document.getElementById('sd-time')?.value;
   if(!date || !time){ toast('Please enter date and time', 'var(--held)'); return; }
   if(!D.sundowning) D.sundowning = [];
-  D.sundowning.push({
-    id:           Date.now(),
+  const sdFields = {
     date, time,
     duration:     document.getElementById('sd-duration')?.value     || '',
     severity:     document.getElementById('sd-severity')?.value     || 'mild',
@@ -7850,14 +7950,26 @@ function saveSundowning(){
     interventions:document.getElementById('sd-interventions')?.value.trim()|| '',
     effectiveness:document.getElementById('sd-effectiveness')?.value      || '',
     notified:     document.getElementById('sd-notified')?.value.trim()     || ''
-  });
+  };
+  if(_editSundownId !== null){
+    const idx = D.sundowning.findIndex(x => x.id === _editSundownId);
+    if(idx !== -1) D.sundowning[idx] = { ...D.sundowning[idx], ...sdFields };
+    _editSundownId = null;
+    const title = document.querySelector('#sundowning-modal .modal-title');
+    if(title) title.textContent = '🌅 Log Sundowning Episode';
+    const btn = document.querySelector('#sundowning-modal .btn-teal');
+    if(btn) btn.textContent = 'Save Episode';
+    toast('✅ Sundowning episode updated', 'var(--given)');
+  } else {
+    D.sundowning.push({ id: Date.now(), ...sdFields });
+    toast('✅ Sundowning episode logged', 'var(--given)');
+  }
   D.sundowning.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   save(); closeModal('sundowning-modal');
   ['sd-behaviors','sd-triggers','sd-interventions','sd-notified'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
   renderSundowning();
-  toast('✅ Sundowning episode logged', 'var(--given)');
 }
 
 function renderSundowning(){
@@ -7885,6 +7997,7 @@ function renderSundowning(){
           <span style="background:${sevBg[e.severity]};color:${sevColor[e.severity]};font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;text-transform:uppercase">${e.severity}</span>
           <span style="font-size:.74rem;color:var(--slate-light);margin-left:8px">${e.duration}</span>
         </div>
+        <button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px" onclick="editSundowning(${e.id})">✏️</button>
         <button class="btn btn-danger btn-xs btn-icon" onclick="deleteSundowning(${e.id})">✕</button>
       </div>
       ${e.behaviors?`<div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:5px"><strong style="color:var(--navy)">Behaviors:</strong> ${e.behaviors}</div>`:''}
@@ -7894,6 +8007,28 @@ function renderSundowning(){
       ${e.notified?`<div style="font-size:.78rem;color:var(--slate-light)">📣 Notified: ${e.notified}</div>`:''}
     </div>`).join('');
 }
+
+function editSundowning(id){
+  const e = (D.sundowning||[]).find(x => x.id === id);
+  if(!e) return;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('sd-date',         e.date);
+  set('sd-time',         e.time);
+  set('sd-duration',     e.duration);
+  set('sd-severity',     e.severity);
+  set('sd-behaviors',    e.behaviors);
+  set('sd-triggers',     e.triggers);
+  set('sd-interventions',e.interventions);
+  set('sd-effectiveness',e.effectiveness);
+  set('sd-notified',     e.notified);
+  _editSundownId = id;
+  const title = document.querySelector('#sundowning-modal .modal-title');
+  if(title) title.textContent = '✏️ Edit Sundowning Episode';
+  const btn = document.querySelector('#sundowning-modal .btn-teal');
+  if(btn) btn.textContent = 'Update Episode';
+  openModal('sundowning-modal');
+}
+let _editSundownId = null;
 
 function deleteSundowning(id){
   if(!confirm('Delete this sundowning record?')) return;
@@ -7921,25 +8056,34 @@ function saveWandering(){
   if(!D.wandering) D.wandering = [];
   const type = document.getElementById('wd-type')?.value || '';
   const isElopement = type.toLowerCase().includes('elopement');
-  D.wandering.push({
-    id:         Date.now(),
-    date, time,
-    type,
-    isElopement,
+  const wdFields = {
+    date, time, type, isElopement,
     location:   document.getElementById('wd-location')?.value.trim()  || '',
     duration:   document.getElementById('wd-duration')?.value.trim()  || '',
     condition:  document.getElementById('wd-condition')?.value.trim() || '',
     action:     document.getElementById('wd-action')?.value.trim()    || '',
     notified,
     prevention: document.getElementById('wd-prevention')?.value.trim()|| ''
-  });
+  };
+  if(_editWanderingId !== null){
+    const idx = D.wandering.findIndex(x => x.id === _editWanderingId);
+    if(idx !== -1) D.wandering[idx] = { ...D.wandering[idx], ...wdFields };
+    _editWanderingId = null;
+    const title = document.querySelector('#wandering-modal .modal-title');
+    if(title) title.textContent = '🚶 Log Wandering / Elopement Incident';
+    const btn = document.querySelector('#wandering-modal .btn-teal');
+    if(btn) btn.textContent = 'Save Incident';
+    toast('✅ Wandering incident updated', 'var(--given)');
+  } else {
+    D.wandering.push({ id: Date.now(), ...wdFields });
+    toast('✅ Wandering incident logged', 'var(--given)');
+  }
   D.wandering.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   save(); closeModal('wandering-modal');
   ['wd-location','wd-duration','wd-condition','wd-action','wd-notified','wd-prevention'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
   renderWandering();
-  toast('✅ Wandering incident logged', 'var(--given)');
 }
 
 function renderWandering(){
@@ -7958,6 +8102,7 @@ function renderWandering(){
           <span style="font-size:.76rem;color:var(--slate-light);margin-left:6px">${fmtTime(e.time)}</span>
           ${e.isElopement?'<span style="background:var(--refused-bg);color:var(--refused);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px">⚠️ ELOPEMENT</span>':''}
         </div>
+        <button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px" onclick="editWandering(${e.id})">✏️</button>
         <button class="btn btn-danger btn-xs btn-icon" onclick="deleteWandering(${e.id})">✕</button>
       </div>
       <div style="font-size:.84rem;font-weight:600;color:var(--navy);margin-bottom:6px">${e.type}</div>
@@ -7969,6 +8114,28 @@ function renderWandering(){
       ${e.prevention?`<div style="font-size:.78rem;color:var(--slate-light)">🛡 Prevention: ${e.prevention}</div>`:''}
     </div>`).join('');
 }
+
+function editWandering(id){
+  const e = (D.wandering||[]).find(x => x.id === id);
+  if(!e) return;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('wd-date',      e.date);
+  set('wd-time',      e.time);
+  set('wd-type',      e.type);
+  set('wd-location',  e.location);
+  set('wd-duration',  e.duration);
+  set('wd-condition', e.condition);
+  set('wd-action',    e.action);
+  set('wd-notified',  e.notified);
+  set('wd-prevention',e.prevention);
+  _editWanderingId = id;
+  const title = document.querySelector('#wandering-modal .modal-title');
+  if(title) title.textContent = '✏️ Edit Wandering Incident';
+  const btn = document.querySelector('#wandering-modal .btn-teal');
+  if(btn) btn.textContent = 'Update Incident';
+  openModal('wandering-modal');
+}
+let _editWanderingId = null;
 
 function deleteWandering(id){
   if(!confirm('Delete this wandering record?')) return;
@@ -7997,20 +8164,31 @@ function saveMemoryCare(){
     toast('Please fill in at least one field', 'var(--held)'); return;
   }
   if(!D.memorycare) D.memorycare = [];
-  D.memorycare.push({
-    id: Date.now(),
+  const mcFields = {
     date,
     shift:         document.getElementById('mc-shift')?.value         || '',
     mood:          document.getElementById('mc-mood')?.value          || '',
     worked, avoid, calming, communication, activities
-  });
+  };
+  if(_editMemoryCareId !== null){
+    const idx = D.memorycare.findIndex(x => x.id === _editMemoryCareId);
+    if(idx !== -1) D.memorycare[idx] = { ...D.memorycare[idx], ...mcFields };
+    _editMemoryCareId = null;
+    const title = document.querySelector('#memorycare-modal .modal-title');
+    if(title) title.textContent = '💬 Add Memory Care Note';
+    const btn = document.querySelector('#memorycare-modal .btn-teal');
+    if(btn) btn.textContent = 'Save Note';
+    toast('✅ Memory care note updated', 'var(--given)');
+  } else {
+    D.memorycare.push({ id: Date.now(), ...mcFields });
+    toast('✅ Memory care note saved', 'var(--given)');
+  }
   D.memorycare.sort((a,b) => b.date.localeCompare(a.date));
   save(); closeModal('memorycare-modal');
   ['mc-worked','mc-avoid','mc-calming','mc-communication','mc-activities'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
   renderMemoryCare();
-  toast('✅ Memory care note saved', 'var(--given)');
 }
 
 function renderMemoryCare(){
@@ -8030,6 +8208,7 @@ function renderMemoryCare(){
           <span style="font-size:.74rem;color:var(--slate-light);margin-left:8px">${e.shift||''}</span>
           ${e.mood?`<span style="font-size:1rem;margin-left:8px" title="${e.mood}">${moodIcon(e.mood)}</span>`:''}
         </div>
+        <button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px" onclick="editMemoryCare(${e.id})">✏️</button>
         <button class="btn btn-danger btn-xs btn-icon" onclick="deleteMemoryCare(${e.id})">✕</button>
       </div>
       ${e.mood?`<div style="font-size:.76rem;color:var(--slate-mid);margin-bottom:8px;font-style:italic">${e.mood}</div>`:''}
@@ -8040,6 +8219,27 @@ function renderMemoryCare(){
       ${e.activities?`<div style="font-size:.82rem"><strong style="color:var(--navy)">🎯 Activities:</strong> <span style="color:var(--slate-mid)">${e.activities}</span></div>`:''}
     </div>`).join('');
 }
+
+function editMemoryCare(id){
+  const e = (D.memorycare||[]).find(x => x.id === id);
+  if(!e) return;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('mc-date',         e.date);
+  set('mc-shift',        e.shift);
+  set('mc-mood',         e.mood);
+  set('mc-worked',       e.worked);
+  set('mc-avoid',        e.avoid);
+  set('mc-calming',      e.calming);
+  set('mc-communication',e.communication);
+  set('mc-activities',   e.activities);
+  _editMemoryCareId = id;
+  const title = document.querySelector('#memorycare-modal .modal-title');
+  if(title) title.textContent = '✏️ Edit Memory Care Note';
+  const btn = document.querySelector('#memorycare-modal .btn-teal');
+  if(btn) btn.textContent = 'Update Note';
+  openModal('memorycare-modal');
+}
+let _editMemoryCareId = null;
 
 function deleteMemoryCare(id){
   if(!confirm('Delete this memory care note?')) return;
