@@ -1109,7 +1109,7 @@ body {
       <div>✅ Wound tracker</div><div>✅ Incident log</div>
       <div>✅ Vital signs & alerts</div><div>✅ PDF daily summary</div>
       <div>✅ Monthly report</div><div>✅ Billing & hours</div>
-      <div>✅ Voice to text</div><div>✅ 19 total sections</div>
+      <div>✅ Voice to text</div><div>✅ Memory care tools</div>
     </div>
     <div style="font-size:.76rem;color:var(--slate-light);margin-bottom:14px;line-height:1.6">🔒 All data stays on your device only — no cloud, no account required</div>
     <div class="paywall-price">$14.99 <span>one-time · pay once, use forever</span></div>
@@ -1181,6 +1181,9 @@ body {
     <button class="nav-btn" onclick="navTo('toileting',this)"><span class="ni">🚻</span> Toileting</button>
     <button class="nav-btn" onclick="navTo('trends',this)"><span class="ni">📊</span> Weekly Trends</button>
     <button class="nav-btn" onclick="navTo('vitals',this)"><span class="ni">🩺</span> Vital Signs <span class="nav-badge" id="nb-vitals"></span></button>
+    <button class="nav-btn" onclick="navTo('sundowning',this)"><span class="ni">🌅</span> Sundowning</button>
+    <button class="nav-btn" onclick="navTo('wandering',this)"><span class="ni">🚶</span> Wandering & Elopement</button>
+    <button class="nav-btn" onclick="navTo('memorycare',this)"><span class="ni">💬</span> Memory Care Notes</button>
   </div>
   <div class="nav-group">
     <div class="nav-label">Professional Tools</div>
@@ -1574,6 +1577,186 @@ body {
   </div>
 </div>
 
+<!-- ═══ SUNDOWNING TRACKER ══════════════════════════════════ -->
+<div id="section-sundowning" class="section">
+  <div class="ph">
+    <div>
+      <div class="ph-title">🌅 Sundowning Tracker</div>
+      <div class="ph-sub">Document late-day confusion, agitation, and behavioral changes</div>
+    </div>
+    <button class="btn btn-teal" onclick="openModal('sundowning-modal')">+ Log Episode</button>
+  </div>
+  <div style="background:#FFF8EC;border:1.5px solid #C9963A;border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:#92400E;line-height:1.6">
+    🌅 <strong>About Sundowning:</strong> Sundowning (late-day confusion) typically occurs in the late afternoon or evening in patients with dementia or Alzheimer's. Document episodes to identify patterns and improve care planning. Always notify your supervisor of severe episodes.
+  </div>
+  <div id="sundowning-date-nav" style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <label style="font-size:.82rem;color:var(--slate-mid);font-weight:600">Date:</label>
+    <input type="date" id="sundowning-date" style="border:1.5px solid var(--border);border-radius:var(--r);padding:7px 11px;font-family:var(--font-body);font-size:.84rem;background:white" onchange="renderSundowning()">
+  </div>
+  <div id="sundowning-list"></div>
+</div>
+
+<!-- Sundowning Modal -->
+<div class="overlay" id="sundowning-modal">
+  <div class="modal">
+    <div class="modal-title">🌅 Log Sundowning Episode</div>
+    <div class="form-row">
+      <div class="fg"><label>Date *</label><input type="date" id="sd-date"></div>
+      <div class="fg"><label>Time of Onset *</label><input type="time" id="sd-time"></div>
+    </div>
+    <div class="fg"><label>Duration</label>
+      <select id="sd-duration" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+        <option>< 15 minutes</option><option>15–30 minutes</option>
+        <option>30–60 minutes</option><option>1–2 hours</option>
+        <option>> 2 hours</option>
+      </select>
+    </div>
+    <div class="fg"><label>Severity</label>
+      <select id="sd-severity" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+        <option value="mild">Mild — restless, slightly confused</option>
+        <option value="moderate">Moderate — agitated, repeated questions, pacing</option>
+        <option value="severe">Severe — combative, wandering, distressed</option>
+      </select>
+    </div>
+    <div class="fg"><label>Behaviors Observed</label>
+      <textarea id="sd-behaviors" rows="2" placeholder="e.g. Pacing hallway, asking to go home, verbal agitation, tearful, refused dinner…"></textarea>
+    </div>
+    <div class="fg"><label>Possible Triggers</label>
+      <textarea id="sd-triggers" rows="2" placeholder="e.g. Loud TV, unfamiliar visitor, schedule change, hunger, fatigue, poor lighting…"></textarea>
+    </div>
+    <div class="fg"><label>Interventions Used</label>
+      <textarea id="sd-interventions" rows="2" placeholder="e.g. Familiar music, reduced lighting, family photos, reassurance, redirected to activity…"></textarea>
+    </div>
+    <div class="fg"><label>Effectiveness</label>
+      <select id="sd-effectiveness" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+        <option>Very effective — resolved quickly</option>
+        <option>Somewhat effective — gradual improvement</option>
+        <option>Minimally effective — continued most of episode</option>
+        <option>Not effective — required additional support</option>
+      </select>
+    </div>
+    <div class="fg"><label>Supervisor Notified</label>
+      <input id="sd-notified" placeholder="Name of supervisor notified (if applicable)"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('sundowning-modal')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveSundowning()">Save Episode</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ WANDERING & ELOPEMENT ════════════════════════════════ -->
+<div id="section-wandering" class="section">
+  <div class="ph">
+    <div>
+      <div class="ph-title">🚶 Wandering & Elopement</div>
+      <div class="ph-sub">Document wandering incidents and elopement attempts</div>
+    </div>
+    <button class="btn btn-teal" onclick="openModal('wandering-modal')">+ Log Incident</button>
+  </div>
+  <div style="background:var(--refused-bg);border:1.5px solid var(--refused);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:var(--refused);line-height:1.6">
+    ⚠️ <strong>Safety Notice:</strong> Wandering and elopement are serious safety events. Document every incident immediately and notify your supervisor per your agency's protocol. Elopement attempts must always be reported.
+  </div>
+  <div id="wandering-list"></div>
+</div>
+
+<!-- Wandering Modal -->
+<div class="overlay" id="wandering-modal">
+  <div class="modal">
+    <div class="modal-title">🚶 Log Wandering / Elopement Incident</div>
+    <div class="form-row">
+      <div class="fg"><label>Date *</label><input type="date" id="wd-date"></div>
+      <div class="fg"><label>Time Discovered *</label><input type="time" id="wd-time"></div>
+    </div>
+    <div class="fg"><label>Incident Type *</label>
+      <select id="wd-type" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+        <option>Wandering — within facility</option>
+        <option>Wandering — entered restricted area</option>
+        <option>Elopement attempt — intercepted</option>
+        <option>Elopement — left facility unaccompanied</option>
+        <option>Night-time wandering</option>
+        <option>Wandering — entered another resident's room</option>
+      </select>
+    </div>
+    <div class="fg"><label>Location Found</label>
+      <input id="wd-location" placeholder="e.g. Hallway near exit, parking lot, another resident's room…"></div>
+    <div class="fg"><label>Duration Missing / Unaccounted</label>
+      <input id="wd-duration" placeholder="e.g. Approximately 5 minutes, 20 minutes…"></div>
+    <div class="fg"><label>Patient Condition When Found</label>
+      <textarea id="wd-condition" rows="2" placeholder="e.g. Calm and cooperative, confused but uninjured, distressed, fell while wandering…"></textarea>
+    </div>
+    <div class="fg"><label>Action Taken</label>
+      <textarea id="wd-action" rows="2" placeholder="e.g. Escorted back to room, reassured, offered snack, applied door alarm, notified charge nurse…"></textarea>
+    </div>
+    <div class="fg"><label>Supervisor / Family Notified *</label>
+      <input id="wd-notified" placeholder="Names of all persons notified"></div>
+    <div class="fg"><label>Prevention Measures Implemented</label>
+      <input id="wd-prevention" placeholder="e.g. Door alarm activated, bed alarm set, room moved closer to nurses station…"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('wandering-modal')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveWandering()">Save Incident</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MEMORY CARE NOTES ════════════════════════════════════ -->
+<div id="section-memorycare" class="section">
+  <div class="ph">
+    <div>
+      <div class="ph-title">💬 Memory Care Notes</div>
+      <div class="ph-sub">What worked today — communication, engagement, and calming strategies</div>
+    </div>
+    <button class="btn btn-teal" onclick="openModal('memorycare-modal')">+ Add Note</button>
+  </div>
+  <div style="background:#F0F4F8;border-radius:var(--r);padding:10px 14px;margin-bottom:16px;font-size:.78rem;color:var(--slate-mid);line-height:1.6">
+    💬 <strong>Memory Care Notes</strong> capture what works for each patient — phrases that calm, topics that engage, triggers to avoid, and communication strategies that connect. These notes help every caregiver provide consistent, personalized memory care.
+  </div>
+  <div id="memorycare-list"></div>
+</div>
+
+<!-- Memory Care Modal -->
+<div class="overlay" id="memorycare-modal">
+  <div class="modal">
+    <div class="modal-title">💬 Add Memory Care Note</div>
+    <div class="form-row">
+      <div class="fg"><label>Date *</label><input type="date" id="mc-date"></div>
+      <div class="fg"><label>Shift</label>
+        <select id="mc-shift" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+          <option>Morning (7am–3pm)</option>
+          <option>Afternoon (3pm–11pm)</option>
+          <option>Night (11pm–7am)</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>What Worked Today</label>
+      <textarea id="mc-worked" rows="2" placeholder="e.g. Talking about her garden, playing Frank Sinatra, showing family photos, calling her by her nickname Peggy…"></textarea>
+    </div>
+    <div class="fg"><label>What to Avoid</label>
+      <textarea id="mc-avoid" rows="2" placeholder="e.g. Mentioning late husband, loud TV, rushing during personal care, mirrors in the hallway…"></textarea>
+    </div>
+    <div class="fg"><label>Calming Strategies That Worked</label>
+      <textarea id="mc-calming" rows="2" placeholder="e.g. Hand massage, Chopin playlist, sitting by the window, rocking chair, rosary beads…"></textarea>
+    </div>
+    <div class="fg"><label>Communication Notes</label>
+      <textarea id="mc-communication" rows="2" placeholder="e.g. Responds better to simple one-step instructions. Use gentle touch before speaking. Avoid correcting her — redirect instead…"></textarea>
+    </div>
+    <div class="fg"><label>Engagement Activities</label>
+      <textarea id="mc-activities" rows="2" placeholder="e.g. Enjoyed sorting laundry, folding towels, looking at photo album, watching Jeopardy…"></textarea>
+    </div>
+    <div class="fg"><label>Overall Mood Today</label>
+      <select id="mc-mood" style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;background:white;width:100%">
+        <option>😊 Good — calm, engaged, cooperative</option>
+        <option>😐 Fair — some anxiety or confusion</option>
+        <option>😟 Difficult — agitated or withdrawn</option>
+        <option>😢 Very difficult — distressed most of shift</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('memorycare-modal')">Cancel</button>
+      <button class="btn btn-teal" onclick="saveMemoryCare()">Save Note</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ SETTINGS ═══════════════════════════════════════════ -->
 <div id="section-settings" class="section">
   <div class="ph">
@@ -1678,12 +1861,14 @@ body {
   <div class="card" style="margin-top:0">
     <div class="card-title">ℹ️ About Tended Health Pro</div>
     <div style="font-size:.86rem;color:var(--slate-mid);line-height:2">
-      <div><strong style="color:var(--navy)">Version:</strong> 4.0.0</div>
+      <div><strong style="color:var(--navy)">Version:</strong> 4.1.0</div>
+      <div><strong style="color:var(--navy)">Sections:</strong> 22 clinical documentation sections</div>
       <div style="font-size:.84rem;color:var(--slate-mid);line-height:1.9">
         <div>👤 <strong style="color:var(--navy)">Patient Care:</strong> Patient Roster · MAR · Incidents · Shift Handoff</div>
         <div>📋 <strong style="color:var(--navy)">Documentation:</strong> Care Plan · Wound Tracker · Diet &amp; Fluids · Family Comms · Pain Scale</div>
         <div>🧠 <strong style="color:var(--navy)">Behavioral &amp; Clinical:</strong> Routines · Triggers · ABC Behavior · Toileting · Vital Signs · Weekly Trends</div>
         <div>🎓 <strong style="color:var(--navy)">Professional Tools:</strong> Voice to Text · Credentials · Billing · Monthly Report</div>
+        <div>💜 <strong style="color:var(--navy)">Memory Care:</strong> Sundowning Tracker · Wandering &amp; Elopement Log · Memory Care Notes</div>
         <div>⚠️ <strong style="color:var(--navy)">Safety:</strong> FDA Black Box Warnings for 90+ medications</div>
       </div>
     </div>
@@ -1696,10 +1881,12 @@ body {
         <span style="flex:1">Privacy Policy</span>
         <span style="font-size:.7rem;color:var(--slate-light)">Opens in browser →</span>
       </a>
-      <a href="mailto:socalreoking@gmail.com" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border:1.5px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--navy);font-size:.86rem;font-weight:600">
+      <a href="https://flougher.github.io/tended-pro/privacy-policy.html"
+         target="_blank" rel="noopener noreferrer"
+         style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border:1.5px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--navy);font-size:.86rem;font-weight:600">
         <span style="font-size:1.1rem">✉️</span>
         <span style="flex:1">Contact Support</span>
-        <span style="font-size:.7rem;color:var(--slate-light)">socalreoking@gmail.com</span>
+        <span style="font-size:.7rem;color:var(--slate-light)">Via Privacy Policy page →</span>
       </a>
       <a href="https://flougher.github.io/tended-pro/"
          target="_blank"
@@ -1707,7 +1894,7 @@ body {
          style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--off-white);border:1.5px solid var(--border);border-radius:var(--r);text-decoration:none;color:var(--navy);font-size:.86rem;font-weight:600">
         <span style="font-size:1.1rem">🌐</span>
         <span style="flex:1">App Website</span>
-        <span style="font-size:.7rem;color:var(--slate-light)">flougher.github.io/tended-pro</span>
+        <span style="font-size:.7rem;color:var(--slate-light)">tendedhealth.app →</span>
       </a>
     </div>
   </div>
@@ -1718,12 +1905,12 @@ body {
       <p style="margin-bottom:10px">Tended Health Pro is a <strong style="color:var(--navy)">documentation and organization tool</strong> for professional caregivers. It is not a medical device, does not provide clinical diagnoses, and does not replace your agency's required documentation systems.</p>
       <p style="margin-bottom:10px">Always follow your employer's policies and applicable local, state, and federal regulations when documenting patient care.</p>
       <p style="margin-bottom:10px"><strong style="color:var(--navy)">Medication warnings</strong> displayed in this app are sourced from FDA drug label data and are for <strong style="color:var(--navy)">informational reference only</strong>. They do not constitute medical advice. Never adjust, withhold, or administer medication outside of a physician's order.</p>
-      <p style="margin-bottom:0;color:var(--slate-light);font-size:.76rem">Tended Health Pro · Version 4.0.0 · For professional caregiver use only</p>
+      <p style="margin-bottom:0;color:var(--slate-light);font-size:.76rem">Tended Health Pro · Version 4.1.0 · For professional caregiver use only</p>
     </div>
   </div>
 
   <div style="text-align:center;margin-top:8px;font-size:.74rem;color:var(--slate-light)">
-    Tended Health Pro · Complete · Version 4.0.0
+    Tended Health Pro · Complete · Version 4.1.0
   </div>
 </div>
 
@@ -2747,7 +2934,7 @@ function load(){
       careplan:{}, wounds:[], intake:[], comms:[],
       routines:{ morning:[], afternoon:[], evening:[] },
       triggers:[], behaviors:[], toileting:[], vitals:[],
-      pain:[], shifts:[],
+      pain:[], shifts:[], sundowning:[], wandering:[], memorycare:[],
       creds:[], billing:[],
       settings:{ name:'', agency:'', role:'', initials:'', supervisor:'' }
     }, JSON.parse(s));
@@ -2856,7 +3043,10 @@ function navTo(id, btn){
     settings:  loadSettings,
     bbw:       renderBBWSection,
     vitals:    initVitals,
-    pain:      initPain
+    pain:      initPain,
+    sundowning: initSundowning,
+    wandering:  initWandering,
+    memorycare: initMemoryCare
   };
   if(renders[id]) renders[id]();
 }
@@ -5049,7 +5239,7 @@ function importData(input){
         patients:[], meds:[], mar:{}, marNotes:{}, incidents:[],
         careplan:{}, wounds:[], intake:[], comms:[],
         routines:{ morning:[], afternoon:[], evening:[] },
-        triggers:[], behaviors:[], toileting:[], vitals:[], pain:[], shifts:[], creds:[], billing:[],
+        triggers:[], behaviors:[], toileting:[], vitals:[], pain:[], shifts:[], sundowning:[], wandering:[], memorycare:[], creds:[], billing:[],
         settings:{ name:'', agency:'', role:'', initials:'', supervisor:'' }
       }, data);
       delete imported._meta;
@@ -6971,7 +7161,40 @@ function buildSampleData(){
     { id:14005, date:dStr2(-2),   time:'09:00', patientId:pid, score:3, location:'Bilateral knees', quality:'Aching',         action:'Medication administered (per MAR)',        notes:'Acetaminophen given per PRN order.' },
   ];
   D.shifts = D.shifts || [];
-  return { patients, meds, mar, marNotes, incidents, careplan, wounds, intake, comms, routines, triggers, behaviors, toileting, vitals, pain, creds, billing, settings };
+  return { patients, meds, mar, marNotes, incidents, careplan, wounds, intake, comms, routines, triggers, behaviors, toileting, vitals, pain, creds, billing, settings,
+    sundowning: [
+      { id:15001, patientId:pid, date:todayISO, time:'16:45', duration:'30–60 minutes', severity:'moderate',
+        behaviors:'Pacing hallway. Asking to go home repeatedly. Refused dinner. Tearful.',
+        triggers:'Dimming evening light. Saw unfamiliar face on TV. Missed afternoon nap.',
+        interventions:'Turned off TV. Put on Chopin. Showed family photos. Sat with resident 20 min.',
+        effectiveness:'Somewhat effective — gradual improvement',
+        notified:'Charge Nurse Martinez' },
+      { id:15002, patientId:pid, date:dStr(-1), time:'17:30', duration:'15–30 minutes', severity:'mild',
+        behaviors:'Restless. Asked where husband was. Minor confusion about time of day.',
+        triggers:'Change in routine — different aide for dinner.',
+        interventions:'Introduced self clearly. Used familiar greeting. Offered tea.',
+        effectiveness:'Very effective — resolved quickly',
+        notified:'' }
+    ],
+    wandering: [
+      { id:16001, patientId:pid, date:dStr(-2), time:'02:15', type:'Night-time wandering', isElopement:false,
+        location:'Hallway outside Room 4A — heading toward exit',
+        duration:'Approximately 8 minutes',
+        condition:'Confused but calm. In nightgown. No injury.',
+        action:'Gently redirected to room. Offered warm milk. Ensured bed alarm was set.',
+        notified:'Charge Nurse Martinez, Supervisor RN Stanton',
+        prevention:'Bed alarm reactivated. Door alarm checked. Room reassessed for safety.' }
+    ],
+    memorycare: [
+      { id:17001, patientId:pid, date:todayISO, shift:'Morning (7am–3pm)',
+        mood:'😐 Fair — some anxiety or confusion',
+        worked:'Called her Peggy (her preferred name). Talked about her rose garden. Showed photo of daughter Linda.',
+        avoid:'Do not mention late husband Harold. Avoid rushing during personal care. TV news causes anxiety.',
+        calming:'Chopin piano music. Rosary beads. Rocking chair by window. Warm blanket.',
+        communication:'Use simple one-step instructions. Gentle touch on shoulder before speaking. Never correct — redirect instead. Speak slowly and maintain eye contact.',
+        activities:'Enjoyed sorting laundry. Looked at photo album. Watched Jeopardy at 7pm — knows many answers.' }
+    ]
+  };
 }
 
 function loadSamplePatient(){
@@ -7008,6 +7231,9 @@ function confirmLoadDemo(){
   D.routines.morning   = [...sample.routines.morning,   ...D.routines.morning];
   D.routines.afternoon = [...sample.routines.afternoon, ...D.routines.afternoon];
   D.routines.evening   = [...sample.routines.evening,   ...D.routines.evening];
+  D.sundowning = [...(sample.sundowning||[]), ...(D.sundowning||[])];
+  D.wandering  = [...(sample.wandering||[]),  ...(D.wandering||[])];
+  D.memorycare = [...(sample.memorycare||[]), ...(D.memorycare||[])];
   if(!D.careplan || !D.careplan.pid) D.careplan = sample.careplan;
   if(!D.settings.name) D.settings = sample.settings;
   save(); updateTopbar(); updateTopbarUser(); renderDashboard();
@@ -7595,6 +7821,227 @@ function startShiftTimer(startTime){
 
 function stopShiftTimer(){
   if(_shiftTimerInterval){ clearInterval(_shiftTimerInterval); _shiftTimerInterval = null; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SUNDOWNING TRACKER
+// ═══════════════════════════════════════════════════════════════
+function initSundowning(){
+  const dateEl = document.getElementById('sundowning-date');
+  if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
+  renderSundowning();
+}
+
+function saveSundowning(){
+  const date = document.getElementById('sd-date')?.value;
+  const time = document.getElementById('sd-time')?.value;
+  if(!date || !time){ toast('Please enter date and time', 'var(--held)'); return; }
+  if(!D.sundowning) D.sundowning = [];
+  D.sundowning.push({
+    id:           Date.now(),
+    date, time,
+    duration:     document.getElementById('sd-duration')?.value     || '',
+    severity:     document.getElementById('sd-severity')?.value     || 'mild',
+    behaviors:    document.getElementById('sd-behaviors')?.value.trim()    || '',
+    triggers:     document.getElementById('sd-triggers')?.value.trim()     || '',
+    interventions:document.getElementById('sd-interventions')?.value.trim()|| '',
+    effectiveness:document.getElementById('sd-effectiveness')?.value      || '',
+    notified:     document.getElementById('sd-notified')?.value.trim()     || ''
+  });
+  D.sundowning.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+  save(); closeModal('sundowning-modal');
+  ['sd-behaviors','sd-triggers','sd-interventions','sd-notified'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  renderSundowning();
+  toast('✅ Sundowning episode logged', 'var(--given)');
+}
+
+function renderSundowning(){
+  const el = document.getElementById('sundowning-list');
+  if(!el) return;
+  const dateVal = document.getElementById('sundowning-date')?.value || new Date().toISOString().split('T')[0];
+  const entries = (D.sundowning||[]).filter(e => e.date === dateVal);
+  const allCount = (D.sundowning||[]).length;
+
+  if(!allCount){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🌅</div><div class="empty-text">No sundowning episodes logged yet.<br>Tap + Log Episode to document an event.</div></div>';
+    return;
+  }
+  if(!entries.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">No episodes on this date.<br><span style="font-size:.78rem;color:var(--given)">Total logged: '+allCount+' episode'+(allCount>1?'s':'')+'</span></div></div>';
+    return;
+  }
+  const sevColor = { mild:'var(--held)', moderate:'#C47A00', severe:'var(--refused)' };
+  const sevBg    = { mild:'var(--held-bg)', moderate:'#FFF3D0', severe:'var(--refused-bg)' };
+  el.innerHTML = entries.map(e => `
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${sevColor[e.severity]||'var(--held)'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <span style="font-weight:700;font-size:.92rem;color:var(--navy)">${fmtTime(e.time)}</span>
+          <span style="background:${sevBg[e.severity]};color:${sevColor[e.severity]};font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;text-transform:uppercase">${e.severity}</span>
+          <span style="font-size:.74rem;color:var(--slate-light);margin-left:8px">${e.duration}</span>
+        </div>
+        <button class="btn btn-danger btn-xs btn-icon" onclick="deleteSundowning(${e.id})">✕</button>
+      </div>
+      ${e.behaviors?`<div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:5px"><strong style="color:var(--navy)">Behaviors:</strong> ${e.behaviors}</div>`:''}
+      ${e.triggers?`<div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:5px"><strong style="color:var(--navy)">Triggers:</strong> ${e.triggers}</div>`:''}
+      ${e.interventions?`<div style="font-size:.82rem;color:var(--teal);margin-bottom:5px">🔧 Interventions: ${e.interventions}</div>`:''}
+      ${e.effectiveness?`<div style="font-size:.78rem;color:var(--slate-light)">Effectiveness: ${e.effectiveness}</div>`:''}
+      ${e.notified?`<div style="font-size:.78rem;color:var(--slate-light)">📣 Notified: ${e.notified}</div>`:''}
+    </div>`).join('');
+}
+
+function deleteSundowning(id){
+  if(!confirm('Delete this sundowning record?')) return;
+  D.sundowning = (D.sundowning||[]).filter(x => x.id !== id);
+  save(); renderSundowning();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WANDERING & ELOPEMENT
+// ═══════════════════════════════════════════════════════════════
+function initWandering(){
+  const dateEl = document.getElementById('wd-date');
+  if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
+  const timeEl = document.getElementById('wd-time');
+  if(timeEl && !timeEl.value) timeEl.value = new Date().toTimeString().slice(0,5);
+  renderWandering();
+}
+
+function saveWandering(){
+  const date = document.getElementById('wd-date')?.value;
+  const time = document.getElementById('wd-time')?.value;
+  const notified = document.getElementById('wd-notified')?.value.trim();
+  if(!date || !time){ toast('Please enter date and time', 'var(--held)'); return; }
+  if(!notified){ toast('Please enter who was notified — this is required', 'var(--refused)'); return; }
+  if(!D.wandering) D.wandering = [];
+  const type = document.getElementById('wd-type')?.value || '';
+  const isElopement = type.toLowerCase().includes('elopement');
+  D.wandering.push({
+    id:         Date.now(),
+    date, time,
+    type,
+    isElopement,
+    location:   document.getElementById('wd-location')?.value.trim()  || '',
+    duration:   document.getElementById('wd-duration')?.value.trim()  || '',
+    condition:  document.getElementById('wd-condition')?.value.trim() || '',
+    action:     document.getElementById('wd-action')?.value.trim()    || '',
+    notified,
+    prevention: document.getElementById('wd-prevention')?.value.trim()|| ''
+  });
+  D.wandering.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
+  save(); closeModal('wandering-modal');
+  ['wd-location','wd-duration','wd-condition','wd-action','wd-notified','wd-prevention'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  renderWandering();
+  toast('✅ Wandering incident logged', 'var(--given)');
+}
+
+function renderWandering(){
+  const el = document.getElementById('wandering-list');
+  if(!el) return;
+  const entries = D.wandering||[];
+  if(!entries.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🚶</div><div class="empty-text">No wandering incidents logged.<br>Tap + Log Incident to document an event.</div></div>';
+    return;
+  }
+  el.innerHTML = entries.map(e => `
+    <div class="card" style="margin-bottom:12px;border-left:4px solid ${e.isElopement?'var(--refused)':'var(--held)'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <span style="font-weight:700;font-size:.9rem;color:var(--navy)">${new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+          <span style="font-size:.76rem;color:var(--slate-light);margin-left:6px">${fmtTime(e.time)}</span>
+          ${e.isElopement?'<span style="background:var(--refused-bg);color:var(--refused);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px">⚠️ ELOPEMENT</span>':''}
+        </div>
+        <button class="btn btn-danger btn-xs btn-icon" onclick="deleteWandering(${e.id})">✕</button>
+      </div>
+      <div style="font-size:.84rem;font-weight:600;color:var(--navy);margin-bottom:6px">${e.type}</div>
+      ${e.location?`<div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:4px">📍 Found: ${e.location}</div>`:''}
+      ${e.duration?`<div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:4px">⏱ Duration: ${e.duration}</div>`:''}
+      ${e.condition?`<div style="font-size:.82rem;color:var(--slate-mid);margin-bottom:4px">Condition: ${e.condition}</div>`:''}
+      ${e.action?`<div style="font-size:.82rem;color:var(--teal);margin-bottom:4px">🔧 Action: ${e.action}</div>`:''}
+      ${e.notified?`<div style="font-size:.78rem;color:var(--slate-light);margin-bottom:3px">📣 Notified: ${e.notified}</div>`:''}
+      ${e.prevention?`<div style="font-size:.78rem;color:var(--slate-light)">🛡 Prevention: ${e.prevention}</div>`:''}
+    </div>`).join('');
+}
+
+function deleteWandering(id){
+  if(!confirm('Delete this wandering record?')) return;
+  D.wandering = (D.wandering||[]).filter(x => x.id !== id);
+  save(); renderWandering();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MEMORY CARE NOTES
+// ═══════════════════════════════════════════════════════════════
+function initMemoryCare(){
+  const dateEl = document.getElementById('mc-date');
+  if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
+  renderMemoryCare();
+}
+
+function saveMemoryCare(){
+  const date = document.getElementById('mc-date')?.value;
+  if(!date){ toast('Please enter a date', 'var(--held)'); return; }
+  const worked       = document.getElementById('mc-worked')?.value.trim();
+  const avoid        = document.getElementById('mc-avoid')?.value.trim();
+  const calming      = document.getElementById('mc-calming')?.value.trim();
+  const communication= document.getElementById('mc-communication')?.value.trim();
+  const activities   = document.getElementById('mc-activities')?.value.trim();
+  if(!worked && !avoid && !calming && !communication && !activities){
+    toast('Please fill in at least one field', 'var(--held)'); return;
+  }
+  if(!D.memorycare) D.memorycare = [];
+  D.memorycare.push({
+    id: Date.now(),
+    date,
+    shift:         document.getElementById('mc-shift')?.value         || '',
+    mood:          document.getElementById('mc-mood')?.value          || '',
+    worked, avoid, calming, communication, activities
+  });
+  D.memorycare.sort((a,b) => b.date.localeCompare(a.date));
+  save(); closeModal('memorycare-modal');
+  ['mc-worked','mc-avoid','mc-calming','mc-communication','mc-activities'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  renderMemoryCare();
+  toast('✅ Memory care note saved', 'var(--given)');
+}
+
+function renderMemoryCare(){
+  const el = document.getElementById('memorycare-list');
+  if(!el) return;
+  const entries = D.memorycare||[];
+  if(!entries.length){
+    el.innerHTML = '<div class="empty"><div class="empty-icon">💬</div><div class="empty-text">No memory care notes yet.<br>Tap + Add Note to document what works for your patient today.</div></div>';
+    return;
+  }
+  const moodIcon = m => m.includes('Good')?'😊':m.includes('Fair')?'😐':m.includes('Very')?'😢':'😟';
+  el.innerHTML = entries.map(e => `
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <span style="font-weight:700;font-size:.92rem;color:var(--navy)">${new Date(e.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}</span>
+          <span style="font-size:.74rem;color:var(--slate-light);margin-left:8px">${e.shift||''}</span>
+          ${e.mood?`<span style="font-size:1rem;margin-left:8px" title="${e.mood}">${moodIcon(e.mood)}</span>`:''}
+        </div>
+        <button class="btn btn-danger btn-xs btn-icon" onclick="deleteMemoryCare(${e.id})">✕</button>
+      </div>
+      ${e.mood?`<div style="font-size:.76rem;color:var(--slate-mid);margin-bottom:8px;font-style:italic">${e.mood}</div>`:''}
+      ${e.worked?`<div style="font-size:.82rem;margin-bottom:6px"><strong style="color:var(--given)">✅ What worked:</strong> <span style="color:var(--slate-mid)">${e.worked}</span></div>`:''}
+      ${e.avoid?`<div style="font-size:.82rem;margin-bottom:6px"><strong style="color:var(--refused)">⚠️ Avoid:</strong> <span style="color:var(--slate-mid)">${e.avoid}</span></div>`:''}
+      ${e.calming?`<div style="font-size:.82rem;margin-bottom:6px"><strong style="color:var(--teal)">💙 Calming:</strong> <span style="color:var(--slate-mid)">${e.calming}</span></div>`:''}
+      ${e.communication?`<div style="font-size:.82rem;margin-bottom:6px"><strong style="color:var(--navy)">💬 Communication:</strong> <span style="color:var(--slate-mid)">${e.communication}</span></div>`:''}
+      ${e.activities?`<div style="font-size:.82rem"><strong style="color:var(--navy)">🎯 Activities:</strong> <span style="color:var(--slate-mid)">${e.activities}</span></div>`:''}
+    </div>`).join('');
+}
+
+function deleteMemoryCare(id){
+  if(!confirm('Delete this memory care note?')) return;
+  D.memorycare = (D.memorycare||[]).filter(x => x.id !== id);
+  save(); renderMemoryCare();
 }
 
 function initShiftClock(){
