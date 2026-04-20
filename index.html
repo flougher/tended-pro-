@@ -3233,11 +3233,11 @@ function renderDashboard(){
     },
     {
       label: 'Sundowning & wandering risk checked',
-      done:  (D.sundowning||[]).filter(e => e.date === today).length > 0 ||
-             (D.wandering||[]).filter(e => e.date === today).length > 0,
+      done:  (D.sundowning||[]).filter(e => e.date === todayISO).length > 0 ||
+             (D.wandering||[]).filter(e => e.date === todayISO).length > 0,
       sub:   (() => {
-               const sdToday = (D.sundowning||[]).filter(e => e.date === today).length;
-               const wdToday = (D.wandering||[]).filter(e => e.date === today).length;
+               const sdToday = (D.sundowning||[]).filter(e => e.date === todayISO).length;
+               const wdToday = (D.wandering||[]).filter(e => e.date === todayISO).length;
                if(sdToday > 0 || wdToday > 0) return `${sdToday+wdToday} memory care event${sdToday+wdToday>1?'s':''} logged today`;
                const recentSD = (D.sundowning||[]).length;
                return recentSD > 0 ? `${recentSD} prior episode${recentSD>1?'s':''} on file — verify alarms active` : 'Verify door and bed alarms are active';
