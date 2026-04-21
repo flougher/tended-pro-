@@ -1130,6 +1130,7 @@ body {
     <div class="topbar-brand">Tended Health Pro</div>
   </div>
   <span class="premium-badge" id="premium-badge">⭐ Pro</span>
+  <span id="topbar-patient-indicator" style="display:none;align-items:center;background:var(--teal);color:white;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
   <div class="topbar-right">
     <span class="topbar-user" id="topbar-user"></span>
     <span class="topbar-date" id="topbar-date"></span>
@@ -1510,6 +1511,7 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openIncidentModal()">+ Log Incident</button>
   </div>
+  <div id="incidents-patient-bar" style="margin-bottom:14px"></div>
   <div id="incident-list">
     <div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No incidents logged yet.<br>Tap + Log Incident to document an event.</div></div>
   </div>
@@ -1594,6 +1596,7 @@ body {
   <div style="background:#FFF8EC;border:1.5px solid #C9963A;border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:#92400E;line-height:1.6">
     🌅 <strong>About Sundowning:</strong> Sundowning (late-day confusion) typically occurs in the late afternoon or evening in patients with dementia or Alzheimer's. Document episodes to identify patterns and improve care planning. Always notify your supervisor of severe episodes.
   </div>
+  <div id="sundowning-patient-bar" style="margin-bottom:10px"></div>
   <div id="sundowning-date-nav" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
     <label style="font-size:.82rem;color:var(--slate-mid);font-weight:600">Date:</label>
     <input type="date" id="sundowning-date" style="border:1.5px solid var(--border);border-radius:var(--r);padding:7px 11px;font-family:var(--font-body);font-size:.84rem;background:white" onchange="renderSundowning()">
@@ -1659,6 +1662,7 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openModal('wandering-modal')">+ Log Incident</button>
   </div>
+  <div id="wandering-patient-bar" style="margin-bottom:10px"></div>
   <div style="background:var(--refused-bg);border:1.5px solid var(--refused);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:var(--refused);line-height:1.6">
     ⚠️ <strong>Safety Notice:</strong> Wandering and elopement are serious safety events. Document every incident immediately and notify your supervisor per your agency's protocol. Elopement attempts must always be reported.
   </div>
@@ -1713,6 +1717,7 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openModal('memorycare-modal')">+ Add Note</button>
   </div>
+  <div id="memorycare-patient-bar" style="margin-bottom:10px"></div>
   <div style="background:#F0F4F8;border-radius:var(--r);padding:10px 14px;margin-bottom:16px;font-size:.78rem;color:var(--slate-mid);line-height:1.6">
     💬 <strong>Memory Care Notes</strong> capture what works for each patient — phrases that calm, topics that engage, triggers to avoid, and communication strategies that connect. These notes help every caregiver provide consistent, personalized memory care.
   </div>
@@ -1850,6 +1855,7 @@ body {
           <button class="btn btn-secondary btn-sm" style="justify-content:center" onclick="document.getElementById('import-file').click()">📥 Import Backup</button>
           <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
           <button class="btn btn-secondary btn-sm" style="justify-content:center;border-color:var(--teal);color:var(--teal)" onclick="confirmLoadDemo()">🧪 Load Demo Data</button>
+          <button class="btn btn-secondary btn-sm" style="justify-content:center;border-color:var(--refused);color:var(--refused)" onclick="confirmClearDemo()">🗑️ Clear Demo Data</button>
         </div>
 
         <div style="margin-top:14px;background:var(--held-bg);border:1px solid #FCD34D;border-radius:var(--r);padding:10px 12px;font-size:.76rem;color:var(--held);line-height:1.6">
@@ -2004,6 +2010,7 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openModal('wound-modal')">+ Add Wound</button>
   </div>
+  <div id="wounds-patient-bar" style="margin-bottom:14px"></div>
 
   <!-- Privacy note re: no photos -->
   <div style="display:flex;align-items:flex-start;gap:10px;background:#F0F4F8;border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:var(--slate-mid);line-height:1.6">
@@ -2024,6 +2031,7 @@ body {
       <div class="ph-sub" id="intake-date-sub">Today's nutrition and fluid log</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="global-patient-intake" onchange="setGlobalPatient(this.value);renderIntake()" style="border:1.5px solid var(--teal);border-radius:var(--r);padding:7px 12px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--navy);font-weight:600"><option value="">— All patients —</option></select>
       <input type="date" id="intake-date" onchange="renderIntake()" style="border:1.5px solid var(--border);border-radius:var(--r);padding:7px 11px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--text)">
       <button class="btn btn-teal btn-sm" onclick="openIntakeModal()">+ Log Entry</button>
     </div>
@@ -2066,6 +2074,7 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openCommModal()">+ Log Contact</button>
   </div>
+  <div id="comms-patient-bar" style="margin-bottom:14px"></div>
   <div id="comm-list">
     <div class="empty"><div class="empty-icon">📞</div><div class="empty-text">No communications logged yet.<br>Tap + Log Contact to document family contact.</div></div>
   </div>
@@ -2153,7 +2162,7 @@ body {
     <div class="ph-sub">Antecedent · Behavior · Consequence — clinical gold standard</div></div>
     <button class="btn btn-teal" onclick="openModal('behavior-modal')">+ Log Behavior</button>
   </div>
-
+  <div id="behaviors-patient-bar" style="margin-bottom:10px"></div>
   <div class="p3-tabs">
     <button class="p3-tab active" onclick="p3Tab('behavior','log')">📋 Log</button>
     <button class="p3-tab" onclick="p3Tab('behavior','summary')">📊 Summary</button>
@@ -2224,6 +2233,7 @@ body {
     <div><div class="ph-title">🚻 Toileting Log</div>
     <div class="ph-sub" id="toilet-date-sub">Today's toileting record</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="global-patient-toileting" onchange="setGlobalPatient(this.value);renderToileting()" style="border:1.5px solid var(--teal);border-radius:var(--r);padding:7px 12px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--navy);font-weight:600"><option value="">— All patients —</option></select>
       <input type="date" id="toilet-date" onchange="renderToileting()" style="border:1.5px solid var(--border);border-radius:var(--r);padding:7px 11px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--text)">
       <button class="btn btn-teal btn-sm" onclick="openModal('toilet-modal')">+ Log Entry</button>
     </div>
@@ -2935,9 +2945,79 @@ let D = {
   settings:  { name:'', agency:'', role:'', initials:'', supervisor:'' }
 };
 
+// ═══════════════════════════════════════════════════════════════
+// GLOBAL PATIENT SELECTOR
+// ═══════════════════════════════════════════════════════════════
+let _globalPatientId = '';
+
+function setGlobalPatient(id){
+  _globalPatientId = id;
+  localStorage.setItem('tendedPro_globalPatient', id);
+  // Sync all patient selectors across sections
+  ['mar-patient','vitals-patient','pain-patient',
+   'global-patient-incidents','global-patient-intake',
+   'global-patient-toileting','global-patient-behaviors',
+   'global-patient-wounds','global-patient-comms',
+   'global-patient-sundowning','global-patient-wandering',
+   'global-patient-memorycare','report-patient'
+  ].forEach(selId => {
+    const el = document.getElementById(selId);
+    if(el && el.tagName === 'SELECT') el.value = id;
+  });
+  // Update topbar patient indicator
+  const ind = document.getElementById('topbar-patient-indicator');
+  if(ind){
+    const p = (D.patients||[]).find(x => x.id == id);
+    ind.textContent = p ? `👤 ${p.fname} ${p.lname}` : '';
+    ind.style.display = p ? 'inline-flex' : 'none';
+  }
+}
+
+function buildPatientSelector(selId, onchangeFn, style=''){
+  const patients = D.patients||[];
+  if(!patients.length) return '<div style="font-size:.8rem;color:var(--slate-light);padding:8px 0">No patients added yet</div>';
+  const opts = ['<option value="">— All patients —</option>',
+    ...patients.map(p => `<option value="${p.id}"${p.id==_globalPatientId?' selected':''}>${p.fname} ${p.lname}${p.room?' · '+p.room:''}</option>`)
+  ].join('');
+  return `<select id="${selId}" onchange="setGlobalPatient(this.value);${onchangeFn}()" style="border:1.5px solid var(--teal);border-radius:var(--r);padding:7px 12px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--navy);font-weight:600;${style}">${opts}</select>`;
+}
+
+function populatePatientBars(){
+  if(!(D.patients||[]).length) return;
+  const bars = [
+    { id:'incidents-patient-bar',   fn:'renderIncidents',   label:'Viewing incidents for:' },
+    { id:'wounds-patient-bar',      fn:'renderWounds',      label:'Viewing wounds for:' },
+    { id:'behaviors-patient-bar',   fn:'initBehaviors',     label:'Viewing behaviors for:' },
+    { id:'comms-patient-bar',       fn:'renderComms',       label:'Viewing comms for:' },
+    { id:'sundowning-patient-bar',  fn:'renderSundowning',  label:'Viewing sundowning for:' },
+    { id:'wandering-patient-bar',   fn:'renderWandering',   label:'Viewing wandering for:' },
+    { id:'memorycare-patient-bar',  fn:'renderMemoryCare',  label:'Viewing notes for:' },
+  ];
+  bars.forEach(bar => {
+    const el = document.getElementById(bar.id);
+    if(!el) return;
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;background:var(--off-white);border-radius:var(--r);padding:8px 12px;border:1.5px solid var(--teal)">
+      <span style="font-size:.78rem;color:var(--slate-mid);font-weight:600;flex-shrink:0">👤 Patient:</span>
+      ${buildPatientSelector(bar.id+'-sel', bar.fn)}
+    </div>`;
+  });
+  // Also sync intake and toileting dropdowns
+  ['global-patient-intake','global-patient-toileting'].forEach(selId => {
+    const el = document.getElementById(selId);
+    if(!el) return;
+    const cur = el.value;
+    el.innerHTML = '<option value="">— All patients —</option>' +
+      (D.patients||[]).map(p => `<option value="${p.id}"${p.id==_globalPatientId?' selected':''}>${p.fname} ${p.lname}${p.room?' · '+p.room:''}</option>`).join('');
+    if(cur) el.value = cur;
+    if(!el.value && _globalPatientId) el.value = _globalPatientId;
+  });
+}
+
+
 function load(){
   try {
     const s = localStorage.getItem(STORE);
+    _globalPatientId = localStorage.getItem('tendedPro_globalPatient') || '';
     if(s) D = Object.assign({
       patients:[], meds:[], mar:{}, marNotes:{}, incidents:[],
       careplan:{}, wounds:[], intake:[], comms:[],
@@ -4972,12 +5052,15 @@ function saveIncident(){
 }
 
 function renderIncidents(){
+  populatePatientBars();
   const el = document.getElementById('incident-list');
   if(!el) return;
+  const _patFilter = document.getElementById('incidents-patient-bar-sel')?.value || _globalPatientId || '';
 
   // Update nav badge
   const todayISO = new Date().toISOString().split('T')[0];
-  const todayInc = D.incidents.filter(i => i.dt.startsWith(todayISO));
+  const _incSource = _patFilter ? (D.incidents||[]).filter(i=>i.patientId==_patFilter) : (D.incidents||[]);
+  const todayInc = _incSource.filter(i => i.dt && i.dt.startsWith(todayISO));
   const nb = document.getElementById('nb-incidents');
   if(nb){ nb.textContent = todayInc.length; nb.classList.toggle('show', todayInc.length > 0); }
 
@@ -5416,7 +5499,8 @@ function saveWound(){
     status:    document.getElementById('wm-status')?.value,
     treatment: document.getElementById('wm-treatment')?.value.trim(),
     notes:     document.getElementById('wm-notes')?.value.trim(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    patientId: _globalPatientId || document.getElementById('mar-patient')?.value || ''
   };
 
   if(_editWoundId !== null){
@@ -5432,9 +5516,12 @@ function saveWound(){
 }
 
 function renderWounds(){
+  populatePatientBars();
   const el = document.getElementById('wound-list');
   if(!el) return;
-  if(!(D.wounds||[]).length){
+  const _patFilter = document.getElementById('wounds-patient-bar-sel')?.value || _globalPatientId || '';
+  const _woundsFiltered = _patFilter ? (D.wounds||[]).filter(w=>w.patientId==_patFilter) : (D.wounds||[]);
+  if(!_woundsFiltered.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">🩹</div><div class="empty-text">No wounds or skin conditions documented.<br>Tap + Add Wound to start tracking.</div></div>';
     return;
   }
@@ -5644,12 +5731,13 @@ function saveComm(){
   const summary = document.getElementById('cm-summary')?.value.trim();
   if(!contact || !summary){ toast('Please enter contact name and summary', 'var(--held)'); return; }
   const fields = {
-    dt:       document.getElementById('cm-dt')?.value || new Date().toISOString(),
-    method:   document.getElementById('cm-method')?.value || 'Phone call — inbound',
+    dt:        document.getElementById('cm-dt')?.value || new Date().toISOString(),
+    method:    document.getElementById('cm-method')?.value || 'Phone call — inbound',
     contact,
-    relation: document.getElementById('cm-relation')?.value.trim() || '',
+    relation:  document.getElementById('cm-relation')?.value.trim() || '',
     summary,
-    followup: document.getElementById('cm-followup')?.value.trim() || ''
+    followup:  document.getElementById('cm-followup')?.value.trim() || '',
+    patientId: _globalPatientId || document.getElementById('mar-patient')?.value || ''
   };
   if(!D.comms) D.comms = [];
   if(_editCommId !== null){
@@ -5670,13 +5758,16 @@ function saveComm(){
 }
 
 function renderComms(){
+  populatePatientBars();
   const el = document.getElementById('comm-list');
   if(!el) return;
-  if(!(D.comms||[]).length){
+  const _patFilter = document.getElementById('comms-patient-bar-sel')?.value || _globalPatientId || '';
+  const _commsFiltered = _patFilter ? (D.comms||[]).filter(x=>x.patientId==_patFilter) : (D.comms||[]);
+  if(!_commsFiltered.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">📞</div><div class="empty-text">No communications logged yet.<br>Tap + Log Contact to document family contact.</div></div>';
     return;
   }
-  el.innerHTML = D.comms.map(c => {
+  el.innerHTML = _commsFiltered.map(c => {
     const dt = new Date(c.dt);
     return `<div class="card comm-item" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
@@ -5966,13 +6057,16 @@ function populateBehaviorTriggerDropdown(){
 }
 
 function renderBehaviorLog(){
+  populatePatientBars();
   const el = document.getElementById('behavior-list');
   if(!el) return;
-  if(!(D.behaviors||[]).length){
+  const _patFilter = document.getElementById('behaviors-patient-bar-sel')?.value || _globalPatientId || '';
+  const _behaviorsFiltered = _patFilter ? (D.behaviors||[]).filter(b=>b.patientId==_patFilter) : (D.behaviors||[]);
+  if(!_behaviorsFiltered.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">🧠</div><div class="empty-text">No behaviors logged yet.<br>Tap + Log Behavior to start ABC tracking.</div></div>';
     return;
   }
-  el.innerHTML = (D.behaviors||[]).map(b => {
+  el.innerHTML = (_behaviorsFiltered||[]).map(b => {
     const dt = new Date(b.dt);
     const linkedTrigger = b.triggerId ? (D.triggers||[]).find(t => t.id == b.triggerId) : null;
     return `<div class="abc-card ${b.severity}">
@@ -7108,12 +7202,12 @@ function buildSampleData(){
     painLevel: '4'
   }];
   const meds = [
-    { id:2001, name:'Metformin',     dose:'500mg', freq:'BID', time:'08:00', route:'Oral', doctor:'Marks', refill:'', notes:'Take with meals.' },
-    { id:2002, name:'Lisinopril',    dose:'10mg',  freq:'QD',  time:'08:00', route:'Oral', doctor:'Marks', refill:'', notes:'Hold if SBP < 90.' },
-    { id:2003, name:'Levothyroxine', dose:'50mcg', freq:'QD',  time:'07:00', route:'Oral', doctor:'Marks', refill:'', notes:'Give 30 min before breakfast.' },
-    { id:2004, name:'Aspirin',       dose:'81mg',  freq:'QD',  time:'08:00', route:'Oral', doctor:'Marks', refill:'', notes:'Give with food.' },
-    { id:2005, name:'Memantine',     dose:'10mg',  freq:'BID', time:'09:00', route:'Oral', doctor:'Marks', refill:'', notes:'Dementia management. Swallow whole.' },
-    { id:2006, name:'Acetaminophen', dose:'500mg', freq:'PRN', time:'',      route:'Oral', doctor:'Marks', refill:'', notes:'Arthritis pain. Max 3g/day.' }
+    { id:2001, patientId:pid, name:'Metformin',     dose:'500mg', freq:'BID', time:'08:00', route:'Oral', doctor:'Marks', refill:'', notes:'Take with meals.' },
+    { id:2002, patientId:pid, name:'Lisinopril',    dose:'10mg',  freq:'QD',  time:'08:00', route:'Oral', doctor:'Marks', refill:'', notes:'Hold if SBP < 90.' },
+    { id:2003, patientId:pid, name:'Levothyroxine', dose:'50mcg', freq:'QD',  time:'07:00', route:'Oral', doctor:'Marks', refill:'', notes:'Give 30 min before breakfast.' },
+    { id:2004, patientId:pid, name:'Aspirin',       dose:'81mg',  freq:'QD',  time:'08:00', route:'Oral', doctor:'Marks', refill:'', notes:'Give with food.' },
+    { id:2005, patientId:pid, name:'Memantine',     dose:'10mg',  freq:'BID', time:'09:00', route:'Oral', doctor:'Marks', refill:'', notes:'Dementia management. Swallow whole.' },
+    { id:2006, patientId:pid, name:'Acetaminophen', dose:'500mg', freq:'PRN', time:'',      route:'Oral', doctor:'Marks', refill:'', notes:'Arthritis pain. Max 3g/day.' }
   ];
   const mk = (medId, status, timeGiven, initials) =>
     ({ [`${todayISO}|${pid}|${medId}`]: { status, timeGiven, initials } });
@@ -7405,15 +7499,44 @@ function confirmLoadDemo(){
   save(); updateTopbar(); updateTopbarUser(); renderDashboard();
   toast('✅ Demo data loaded — Margaret Thompson added!', 'var(--given)');
 }
+function confirmClearDemo(){
+  if(!confirm('Remove all sample patient data for Margaret Thompson?\n\nThis will delete her patient profile, medications, incidents, wounds, vitals, memory care data, and all other demo entries.\n\nYour own real patient data will not be affected.')) return;
+  const pid = 1700000001;
+  // Remove Margaret from patients
+  D.patients    = (D.patients||[]).filter(p => p.id !== pid);
+  // Remove all data linked to Margaret
+  D.incidents   = (D.incidents||[]).filter(i => i.patientId != pid && !i.id?.toString().startsWith('3'));
+  D.wounds      = (D.wounds||[]).filter(w => w.patientId != pid && !w.id?.toString().startsWith('4'));
+  D.intake      = (D.intake||[]).filter(e => e.patientId != pid && !e.id?.toString().startsWith('5'));
+  D.comms       = (D.comms||[]).filter(c => !c.id?.toString().startsWith('6'));
+  D.behaviors   = (D.behaviors||[]).filter(b => b.patientId != pid && !b.id?.toString().startsWith('9'));
+  D.toileting   = (D.toileting||[]).filter(t => t.patientId != pid && !t.id?.toString().startsWith('10'));
+  D.vitals      = (D.vitals||[]).filter(v => v.patientId != pid && !v.id?.toString().startsWith('13'));
+  D.pain        = (D.pain||[]).filter(p => p.patientId != pid && !p.id?.toString().startsWith('14'));
+  D.sundowning  = (D.sundowning||[]).filter(s => s.patientId != pid && !s.id?.toString().startsWith('15'));
+  D.wandering   = (D.wandering||[]).filter(w => w.patientId != pid && !w.id?.toString().startsWith('16'));
+  D.memorycare  = (D.memorycare||[]).filter(m => m.patientId != pid && !m.id?.toString().startsWith('17'));
+  D.creds       = (D.creds||[]).filter(c => !c.id?.toString().startsWith('11'));
+  D.billing     = (D.billing||[]).filter(b => !b.id?.toString().startsWith('12'));
+  D.triggers    = (D.triggers||[]).filter(t => !t.id?.toString().startsWith('8'));
+  D.meds        = (D.meds||[]).filter(m => ![2001,2002,2003,2004,2005,2006].includes(m.id));
+  // Clear MAR entries for Margaret
+  Object.keys(D.mar).forEach(k => { if(k.includes(`|${pid}|`)) delete D.mar[k]; });
+  // Clear care plan if it was Margaret's
+  if(D.careplan?.updatedBy === 'RN Amy Stanton') D.careplan = {};
+  // Clear routines sample data
+  D.routines.morning   = (D.routines.morning||[]).filter(r => !r.id?.toString().startsWith('7'));
+  D.routines.afternoon = (D.routines.afternoon||[]).filter(r => !r.id?.toString().startsWith('7'));
+  D.routines.evening   = (D.routines.evening||[]).filter(r => !r.id?.toString().startsWith('7'));
+  save(); updateTopbar(); updateTopbarUser(); renderDashboard();
+  toast('✅ Demo data cleared — ready for your real patients', 'var(--given)');
+}
 function checkFirstLaunch(){
   const welcomed = localStorage.getItem('tendedPro_welcomed');
   if(!welcomed && !D.patients.length){
     document.getElementById('welcome-overlay').style.display = 'flex';
   }
 }
-
-// ═══════════════════════════════════════════════════════════════
-// PREMIUM SYSTEM
 // ═══════════════════════════════════════════════════════════════
 const PREMIUM_KEY   = 'tendedPro_premium';
 const TRIAL_KEY     = 'tendedPro_trialStart';
@@ -8085,6 +8208,7 @@ function toggleSundowningAll(){
 }
 
 function renderSundowning(){
+  populatePatientBars();
   const el = document.getElementById('sundowning-list');
   if(!el) return;
   const dateVal = document.getElementById('sundowning-date')?.value || new Date().toISOString().split('T')[0];
@@ -8200,6 +8324,7 @@ function saveWandering(){
 }
 
 function renderWandering(){
+  populatePatientBars();
   const el = document.getElementById('wandering-list');
   if(!el) return;
   const entries = D.wandering||[];
@@ -8305,6 +8430,7 @@ function saveMemoryCare(){
 }
 
 function renderMemoryCare(){
+  populatePatientBars();
   const el = document.getElementById('memorycare-list');
   if(!el) return;
   const entries = D.memorycare||[];
