@@ -3076,8 +3076,6 @@ function migrateData(){
   }
 
   // Mark migration as complete
-  D._schemaVersion = SCHEMA_VERSION;
-
   // 5. routines — migrate from flat {morning:[],afternoon:[],evening:[]} 
   // to keyed { [patientId]: {morning:[],afternoon:[],evening:[]} }
   if(D.routines && typeof D.routines === 'object'){
@@ -3095,6 +3093,9 @@ function migrateData(){
       D.routines[key] = legacy;
     }
   }
+
+  // Mark migration complete — must be last line
+  D._schemaVersion = SCHEMA_VERSION;
 }
 
 
@@ -4582,7 +4583,7 @@ function printMAR(){
       <input id="pain-notes" placeholder="Additional observations, patient statements…">
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal('pain-modal')">Cancel</button>
+      <button class="btn btn-secondary" onclick="_editPainId=null;const _pt=document.querySelector('#pain-modal .modal-title');if(_pt)_pt.textContent='Log Pain Assessment';const _pb=document.querySelector('#pain-modal .btn-teal');if(_pb)_pb.textContent='Save Assessment';closeModal('pain-modal')">Cancel</button>
       <button class="btn btn-teal" onclick="savePain()">Save Assessment</button>
     </div>
   </div>
@@ -5151,14 +5152,13 @@ function saveIncident(){
     desc,
     action:    document.getElementById('inc-action').value.trim(),
     reported:  document.getElementById('inc-reported').value.trim(),
-    patientId: document.getElementById('mar-patient')?.value || document.getElementById('patient-select')?.value || ''
   };
   if(_editIncidentId !== null){
     const idx = D.incidents.findIndex(x => x.id === _editIncidentId);
     if(idx !== -1) D.incidents[idx] = { ...D.incidents[idx], ...fields };
     toast('✅ Incident updated', 'var(--given)');
   } else {
-    D.incidents.push({ id: Date.now(), ...fields });
+    D.incidents.push({ id: Date.now(), patientId: _globalPatientId || '', ...fields });
     toast('✅ Incident logged', 'var(--given)');
   }
   D.incidents.sort((a,b) => new Date(b.dt) - new Date(a.dt));
@@ -5569,9 +5569,11 @@ function loadCareplan(){
 }
 
 function saveCareplan(){
-  if(!_globalPatientId){ toast('Please select a patient first', 'var(--held)'); return; }
+  // Use selected patient, or find one if none selected but form has content
+  const _cpPid = _globalPatientId || (Object.keys(D.careplan||{}).find(k => D.careplan[k]?.goals));
+  if(!_cpPid){ toast('Please select a patient first', 'var(--held)'); return; }
   const get = id => document.getElementById(id)?.value?.trim() || '';
-  setCarePlanForPatient(_globalPatientId, {
+  setCarePlanForPatient(_cpPid, {
     goals:        get('cp-goals'),
     dnr:          get('cp-dnr'),
     proxy:        get('cp-proxy'),
@@ -5627,7 +5629,6 @@ function saveWound(){
     treatment: document.getElementById('wm-treatment')?.value.trim(),
     notes:     document.getElementById('wm-notes')?.value.trim(),
     updatedAt: new Date().toISOString(),
-    patientId: _globalPatientId || document.getElementById('mar-patient')?.value || ''
   };
 
   if(_editWoundId !== null){
@@ -5636,7 +5637,7 @@ function saveWound(){
     toast('✅ Wound record updated', 'var(--given)');
   } else {
     if(!D.wounds) D.wounds = [];
-  D.wounds.push({ id: Date.now(), ...fields });
+  D.wounds.push({ id: Date.now(), patientId: _globalPatientId || '', ...fields });
     toast('✅ Wound added', 'var(--given)');
   }
   save(); closeModal('wound-modal'); renderWounds();
@@ -5670,6 +5671,7 @@ function renderWounds(){
         <div style="display:flex;gap:5px">
           <button class="btn btn-secondary btn-xs btn-icon" onclick="openWoundModal(${w.id})" title="Edit">✏️</button>
           ${w.status !== 'Healed' ? `<button class="btn btn-xs" onclick="closeWound(${w.id})" title="Mark healed" style="background:var(--given-bg);color:var(--given);border:1px solid var(--given);border-radius:var(--r-sm);padding:3px 8px;font-size:.68rem;font-weight:700;cursor:pointer">✓ Close</button>` : '<span style="font-size:.68rem;color:var(--given);font-weight:600">✓ Healed</span>'}
+          <button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px;margin-right:3px" onclick="openWoundModal(${w.id})" title="Edit">✏️</button>
           <button class="btn btn-danger btn-xs btn-icon" onclick="deleteWound(${w.id})" title="Delete">✕</button>
         </div>
       </div>
@@ -5746,7 +5748,6 @@ function saveIntake(){
     pct:       document.getElementById('im-pct')?.value || '',
     fluid:     parseInt(document.getElementById('im-fluid')?.value || '0') || 0,
     notes:     document.getElementById('im-notes')?.value.trim() || '',
-    patientId: document.getElementById('mar-patient')?.value || ''
   };
   if(!D.intake) D.intake = [];
   if(_editIntakeId !== null){
@@ -5754,7 +5755,7 @@ function saveIntake(){
     if(idx !== -1) D.intake[idx] = { ...D.intake[idx], ...fields };
     toast('✅ Entry updated', 'var(--given)');
   } else {
-    D.intake.push({ id: Date.now(), ...fields });
+    D.intake.push({ id: Date.now(), patientId: _globalPatientId || '', ...fields });
     toast('✅ Intake logged', 'var(--given)');
   }
   D.intake.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
@@ -5866,8 +5867,7 @@ function saveComm(){
     contact,
     relation:  document.getElementById('cm-relation')?.value.trim() || '',
     summary,
-    followup:  document.getElementById('cm-followup')?.value.trim() || '',
-    patientId: _globalPatientId || document.getElementById('mar-patient')?.value || ''
+    followup:  document.getElementById('cm-followup')?.value.trim() || ''
   };
   if(!D.comms) D.comms = [];
   if(_editCommId !== null){
@@ -5875,7 +5875,7 @@ function saveComm(){
     if(idx !== -1) D.comms[idx] = { ...D.comms[idx], ...fields };
     toast('✅ Communication updated', 'var(--given)');
   } else {
-    D.comms.push({ id: Date.now(), ...fields });
+    D.comms.push({ id: Date.now(), patientId: _globalPatientId || '', ...fields });
     toast('✅ Communication logged', 'var(--given)');
   }
   D.comms.sort((a,b) => new Date(b.dt) - new Date(a.dt));
@@ -5981,20 +5981,33 @@ function openRoutineModal(period, editId){
 function saveRoutineItem(){
   const task = document.getElementById('rm-task')?.value.trim();
   if(!task){ toast('Please enter a routine task', 'var(--held)'); return; }
-  if(!_globalPatientId){ toast('Please select a patient first', 'var(--held)'); return; }
   const period = document.getElementById('rm-period')?.value || 'morning';
-  const r = getRoutinesForPatient(_globalPatientId);
-  if(!r[period]) r[period] = [];
   const fields = {
     task, period,
     time:  document.getElementById('rm-time')?.value || '',
     notes: document.getElementById('rm-notes')?.value.trim() || ''
   };
   if(_editRoutineId !== null){
+    // Find which patient bucket contains this routine item
+    let editPid = _globalPatientId;
+    if(!editPid){
+      for(const pid of Object.keys(D.routines||{})){
+        const bucket = D.routines[pid];
+        for(const p of ['morning','afternoon','evening']){
+          if((bucket[p]||[]).some(x => x.id === _editRoutineId)){ editPid = pid; break; }
+        }
+        if(editPid) break;
+      }
+    }
+    if(!editPid){ toast('Cannot find patient for this routine', 'var(--held)'); return; }
+    const r = getRoutinesForPatient(editPid);
     const idx = r[period].findIndex(x => x.id === _editRoutineId);
     if(idx !== -1) r[period][idx] = { ...r[period][idx], ...fields };
     toast('✅ Routine item updated', 'var(--given)');
   } else {
+    if(!_globalPatientId){ toast('Please select a patient first', 'var(--held)'); return; }
+    const r = getRoutinesForPatient(_globalPatientId);
+    if(!r[period]) r[period] = [];
     r[period].push({ id:Date.now(), done:false, ...fields });
     toast('✅ Routine item added', 'var(--given)');
   }
@@ -6177,7 +6190,7 @@ function saveBehavior(){
     toast('✅ Behavior updated', 'var(--given)');
     _editBehaviorId = null;
   } else {
-    D.behaviors.push({ id: Date.now(), ...fields });
+    D.behaviors.push({ id: Date.now(), patientId: _globalPatientId || '', ...fields });
     toast('✅ Behavior logged', 'var(--given)');
   }
   D.behaviors.sort((a,b) => new Date(b.dt) - new Date(a.dt));
@@ -6385,7 +6398,7 @@ function saveToileting(){
     toast('✅ Toileting entry updated', 'var(--given)');
     _editToiletId = null;
   } else {
-    D.toileting.push({ id: Date.now(), ...fields });
+    D.toileting.push({ id: Date.now(), patientId: _globalPatientId || '', ...fields });
     toast('✅ Toileting entry logged', 'var(--given)');
   }
   D.toileting.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
@@ -6975,6 +6988,9 @@ function openBillingModal(editId){
 function saveBilling(){
   const date = document.getElementById('bl-date')?.value;
   if(!date){ toast('Please select a date', 'var(--held)'); return; }
+  if(_editBillId === null && !_globalPatientId){
+    toast('Please select a patient first', 'var(--held)'); return;
+  }
   if(!D.billing) D.billing = [];
 
   const start   = document.getElementById('bl-start')?.value || '';
@@ -7274,7 +7290,7 @@ function renderReport(){
 
   // Billing summary
   if(check('rpt-billing')){
-    const billMonth = (D.billing||[]).filter(b=>inMonth(b.date));
+    const billMonth = (D.billing||[]).filter(b=>inMonth(b.date) && (!_globalPatientId || String(b.patientId) === String(_globalPatientId)));
     const hrs = billMonth.reduce((s,b)=>s+(b.hours||0),0);
     const earned = billMonth.reduce((s,b)=>s+(b.earned||0),0);
     sections += `<div class="report-section"><div class="report-section-title">💳 Billing Summary</div>
@@ -7412,12 +7428,12 @@ function buildSampleData(){
     savedAt: new Date().toISOString()
   };
   const wounds = [
-    { id:4001, date:dStr(-14), location:'Sacrum / Coccyx', type:'Pressure ulcer / injury',
+    { id:4001, patientId:pid, date:dStr(-14), location:'Sacrum / Coccyx', type:'Pressure ulcer / injury',
       stage:'Stage 3 — Full-thickness skin loss', size:'3.2cm x 2.8cm x 0.5cm',
       appearance:'60% granulation, 40% slough. Serosanguinous drainage. Periwound erythematous.',
       treatment:'Saline cleanse. Calcium alginate + foam dressing. Reposition q2h.',
       status:'Improving', updatedAt:new Date().toISOString(), notes:'No tunneling. Photo taken.' },
-    { id:4002, date:dStr(-2), location:'Right elbow (lateral)', type:'Skin tear',
+    { id:4002, patientId:pid, date:dStr(-2), location:'Right elbow (lateral)', type:'Skin tear',
       stage:'', size:'2.1cm x 0.8cm',
       appearance:'Partial thickness. Flap intact. Minimal serous drainage.',
       treatment:'Non-adherent dressing. Change every 2 days.',
@@ -7428,19 +7444,19 @@ function buildSampleData(){
     { id:5002, patientId:pid, date:todayISO, time:'10:00', type:'Snack',      pct:100, fluid:90,  notes:'Applesauce and crackers.' },
     { id:5003, patientId:pid, date:todayISO, time:'12:15', type:'Lunch',      pct:70,  fluid:150, notes:'Fatigued. Chicken soup, mashed potato, pudding.' },
     { id:5004, patientId:pid, date:todayISO, time:'14:30', type:'Snack',      pct:100, fluid:60,  notes:'Yogurt.' },
-    { id:5005, date:dStr(-1), time:'07:30', type:'Breakfast',  pct:85,  fluid:160, notes:'' },
-    { id:5006, date:dStr(-1), time:'18:00', type:'Dinner',     pct:65,  fluid:120, notes:'Sundowning affected appetite.' }
+    { id:5005, patientId:pid, date:dStr(-1), time:'07:30', type:'Breakfast',  pct:85,  fluid:160, notes:'' },
+    { id:5006, patientId:pid, date:dStr(-1), time:'18:00', type:'Dinner',     pct:65,  fluid:120, notes:'Sundowning affected appetite.' }
   ];
   const comms = [
-    { id:6001, dt:dtAt(-1,'14:30'), contact:'Linda Flores', relation:'Daughter / POA',
+    { id:6001, patientId:pid, dt:dtAt(-1,'14:30'), contact:'Linda Flores', relation:'Daughter / POA',
       method:'Phone call — outbound',
       summary:'Discussed wound progression to Stage 3. Updated care plan and repositioning schedule.',
       followup:'Schedule wound care team meeting. Linda to attend Thursday 2pm.' },
-    { id:6002, dt:dtAt(-3,'09:45'), contact:'Dr. Evelyn Marks', relation:'Primary Physician',
+    { id:6002, patientId:pid, dt:dtAt(-3,'09:45'), contact:'Dr. Evelyn Marks', relation:'Primary Physician',
       method:'Phone call — outbound',
       summary:'Reported wound change and near-fall. New orders: wound care consult, BG monitoring AC&HS.',
       followup:'Implement new orders. Recheck wound Friday.' },
-    { id:6003, dt:dtAt(-5,'15:00'), contact:'Robert Thompson', relation:'Son',
+    { id:6003, patientId:pid, dt:dtAt(-5,'15:00'), contact:'Robert Thompson', relation:'Son',
       method:'In-person visit',
       summary:'Updated on dementia progression. Discussed sundowning strategies.',
       followup:'Provide dementia resource pamphlet.' }
@@ -7472,13 +7488,13 @@ function buildSampleData(){
     ]
   };
   const triggers = [
-    { id:8001, trigger:'Loud or sudden noises (TV, shouting)',
+    { id:8001, patientId:pid, trigger:'Loud or sudden noises (TV, shouting)',
       behavior:'Covers ears, distressed, may vocalize loudly.',
       deescalation:'Lower volume. Move to quieter area. Speak calmly. Offer Chopin.', category:'Environmental' },
-    { id:8002, trigger:'Being rushed during personal care',
+    { id:8002, patientId:pid, trigger:'Being rushed during personal care',
       behavior:'Resistance, verbal refusal, may grab caregiver hands.',
       deescalation:'Slow down. Narrate each step. Offer choices. Never force.', category:'Interpersonal' },
-    { id:8003, trigger:'Unfamiliar caregiver or changed routine',
+    { id:8003, patientId:pid, trigger:'Unfamiliar caregiver or changed routine',
       behavior:'Confusion, asks "where am I," may become tearful.',
       deescalation:'Introduce yourself each time. Point to familiar objects. Call Linda if distress persists.', category:'Routine disruption' }
   ];
@@ -7499,8 +7515,8 @@ function buildSampleData(){
     { id:10002, patientId:pid, date:todayISO,  time:'09:45', type:'bm',   amount:'Small',    continent:'continent',   product:'', notes:'Small formed stool.' },
     { id:10003, patientId:pid, date:todayISO,  time:'11:30', type:'void', amount:'Large',    continent:'continent',   product:'', notes:'' },
     { id:10004, patientId:pid, date:todayISO,  time:'13:15', type:'void', amount:'Moderate', continent:'incontinent', product:'Brief', notes:'Brief saturated. Changed promptly.' },
-    { id:10005, date:dStr(-1),  time:'08:00', type:'void', amount:'Large',    continent:'continent',   product:'', notes:'' },
-    { id:10006, date:dStr(-1),  time:'14:00', type:'bm',   amount:'Moderate', continent:'continent',   product:'', notes:'Normal stool.' }
+    { id:10005, patientId:pid, date:dStr(-1),  time:'08:00', type:'void', amount:'Large',    continent:'continent',   product:'', notes:'' },
+    { id:10006, patientId:pid, date:dStr(-1),  time:'14:00', type:'bm',   amount:'Moderate', continent:'continent',   product:'', notes:'Normal stool.' }
   ];
   const creds = [
     { id:11001, name:'CNA License — California', number:'CA-CNA-298471', issued:'2021-06-15', expiry:dStr(60),  issuer:'California Dept. of Health', notes:'Renewal required every 2 years.' },
@@ -7509,10 +7525,10 @@ function buildSampleData(){
     { id:11004, name:'First Aid Certification',  number:'RC-FA-2024-551',issued:'2024-03-22', expiry:dStr(355), issuer:'American Red Cross',             notes:'' }
   ];
   const billing = [
-    { id:12001, date:dStr(-6), patient:'Margaret Thompson', service:'Personal care',              start:'08:00', end:'12:00', hours:4, rate:28, earned:112, miles:12, status:'paid',      notes:'Regular shift.' },
-    { id:12002, date:dStr(-4), patient:'Margaret Thompson', service:'Personal care + Wound care', start:'08:00', end:'13:00', hours:5, rate:28, earned:140, miles:12, status:'paid',      notes:'Extended — wound assessment.' },
-    { id:12003, date:dStr(-2), patient:'Margaret Thompson', service:'Personal care',              start:'08:00', end:'12:00', hours:4, rate:28, earned:112, miles:12, status:'submitted',  notes:'Submitted 2 days ago.' },
-    { id:12004, date:todayISO, patient:'Margaret Thompson', service:'Personal care',              start:'08:00', end:'12:00', hours:4, rate:28, earned:112, miles:12, status:'pending',    notes:"Today's shift." }
+    { id:12001, patientId:pid, date:dStr(-6), patient:'Margaret Thompson', service:'Personal care',              start:'08:00', end:'12:00', hours:4, rate:28, earned:112, miles:12, status:'paid',      notes:'Regular shift.' },
+    { id:12002, patientId:pid, date:dStr(-4), patient:'Margaret Thompson', service:'Personal care + Wound care', start:'08:00', end:'13:00', hours:5, rate:28, earned:140, miles:12, status:'paid',      notes:'Extended — wound assessment.' },
+    { id:12003, patientId:pid, date:dStr(-2), patient:'Margaret Thompson', service:'Personal care',              start:'08:00', end:'12:00', hours:4, rate:28, earned:112, miles:12, status:'submitted',  notes:'Submitted 2 days ago.' },
+    { id:12004, patientId:pid, date:todayISO, patient:'Margaret Thompson', service:'Personal care',              start:'08:00', end:'12:00', hours:4, rate:28, earned:112, miles:12, status:'pending',    notes:"Today's shift." }
   ];
   const settings = { name:'Jordan Rivera', agency:'Caring Hands Home Health', role:'CNA', initials:'CNA-JR', supervisor:'RN Amy Stanton · 702-555-0199' };
   // Sample vitals
@@ -7947,7 +7963,7 @@ function saveVitals(){
 
   if(_editVitalsId !== null){
     const idx = D.vitals.findIndex(x => x.id === _editVitalsId);
-    if(idx !== -1) D.vitals[idx] = { ...D.vitals[idx], ...entry, id: _editVitalsId };
+    if(idx !== -1) D.vitals[idx] = { ...D.vitals[idx], ...entry, id: _editVitalsId, patientId: D.vitals[idx].patientId || entry.patientId };
     _editVitalsId = null;
     const title = document.querySelector('#vitals-modal .modal-title');
     if(title) title.textContent = 'Log Vital Signs';
@@ -8390,7 +8406,7 @@ function saveSundowning(){
     if(btn) btn.textContent = 'Save Episode';
     toast('✅ Sundowning episode updated', 'var(--given)');
   } else {
-    D.sundowning.push({ id: Date.now(), ...sdFields });
+    D.sundowning.push({ id: Date.now(), patientId: _globalPatientId || '', ...sdFields });
     toast('✅ Sundowning episode logged', 'var(--given)');
   }
   D.sundowning.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
@@ -8516,7 +8532,7 @@ function saveWandering(){
     if(btn) btn.textContent = 'Save Incident';
     toast('✅ Wandering incident updated', 'var(--given)');
   } else {
-    D.wandering.push({ id: Date.now(), ...wdFields });
+    D.wandering.push({ id: Date.now(), patientId: _globalPatientId || '', ...wdFields });
     toast('✅ Wandering incident logged', 'var(--given)');
   }
   D.wandering.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
@@ -8624,7 +8640,7 @@ function saveMemoryCare(){
     if(btn) btn.textContent = 'Save Note';
     toast('✅ Memory care note updated', 'var(--given)');
   } else {
-    D.memorycare.push({ id: Date.now(), ...mcFields });
+    D.memorycare.push({ id: Date.now(), patientId: _globalPatientId || '', ...mcFields });
     toast('✅ Memory care note saved', 'var(--given)');
   }
   D.memorycare.sort((a,b) => b.date.localeCompare(a.date));
@@ -8687,6 +8703,7 @@ function editMemoryCare(id){
   openModal('memorycare-modal');
 }
 let _editMemoryCareId = null;
+let _editPainId      = null;
 
 function deleteMemoryCare(id){
   if(!confirm('Delete this memory care note?')) return;
@@ -8754,6 +8771,32 @@ function selectPainScore(score){
   }
 }
 
+function editPain(id){
+  const e = (D.pain||[]).find(x => x.id === id);
+  if(!e) return;
+  _editPainId = id;
+  const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
+  set('pain-date', e.date);
+  set('pain-time', e.time);
+  set('pain-location', e.location||'');
+  set('pain-notes', e.notes||'');
+  if(document.getElementById('pain-quality')) document.getElementById('pain-quality').value = e.quality||'';
+  if(document.getElementById('pain-action')) document.getElementById('pain-action').value = e.action||'';
+  // Set score
+  const scoreEl = document.getElementById('pain-score-val');
+  if(scoreEl) scoreEl.value = e.score;
+  buildPainPicker();
+  // Update modal title and button
+  const title = document.querySelector('#pain-modal .modal-title');
+  if(title) title.textContent = 'Edit Pain Assessment';
+  const btn = document.querySelector('#pain-modal .btn-teal');
+  if(btn) btn.textContent = 'Update Assessment';
+  // Pre-select patient
+  const patEl = document.getElementById('pain-modal-patient');
+  if(patEl && e.patientId) patEl.value = e.patientId;
+  openModal('pain-modal');
+}
+
 function savePain(){
   const score = document.getElementById('pain-score-val')?.value;
   const date  = document.getElementById('pain-date')?.value;
@@ -8761,16 +8804,33 @@ function savePain(){
   if(score===''||score===undefined){ toast('Please select a pain score (0–10)','var(--held)'); return; }
   if(!date||!time){ toast('Please enter date and time','var(--held)'); return; }
   if(!D.pain) D.pain = [];
-  D.pain.unshift({
-    id:        Date.now(),
+  const fields = {
     date, time,
-    patientId: document.getElementById('pain-modal-patient')?.value || '',
-    score:     parseInt(score),
-    location:  document.getElementById('pain-location')?.value.trim()  || '',
-    quality:   document.getElementById('pain-quality')?.value          || '',
-    action:    document.getElementById('pain-action')?.value           || '',
-    notes:     document.getElementById('pain-notes')?.value.trim()     || ''
-  });
+    score:    parseInt(score),
+    location: document.getElementById('pain-location')?.value.trim()  || '',
+    quality:  document.getElementById('pain-quality')?.value          || '',
+    action:   document.getElementById('pain-action')?.value           || '',
+    notes:    document.getElementById('pain-notes')?.value.trim()     || ''
+  };
+  if(_editPainId !== null){
+    const idx = D.pain.findIndex(x => x.id === _editPainId);
+    if(idx !== -1) D.pain[idx] = { ...D.pain[idx], ...fields };
+    _editPainId = null;
+    const title = document.querySelector('#pain-modal .modal-title');
+    if(title) title.textContent = 'Log Pain Assessment';
+    const btn = document.querySelector('#pain-modal .btn-teal');
+    if(btn) btn.textContent = 'Save Assessment';
+    toast('✅ Pain assessment updated','var(--given)');
+  } else {
+    D.pain.unshift({
+      id: Date.now(),
+      patientId: document.getElementById('pain-modal-patient')?.value || '',
+      ...fields
+    });
+    const sc = parseInt(score);
+    if(sc >= 7) toast(`⚠️ Pain score ${sc}/10 — notify supervisor`,'var(--refused)');
+    else toast('✅ Pain assessment saved','var(--given)');
+  }
   save(); closeModal('pain-modal');
   ['pain-location','pain-notes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('pain-quality').value = '';
@@ -8778,9 +8838,6 @@ function savePain(){
   document.getElementById('pain-score-val').value = '';
   buildPainPicker();
   renderPainLog();
-  const sc = parseInt(score);
-  if(sc >= 7) toast(`⚠️ Pain score ${sc}/10 — notify supervisor`,'var(--refused)');
-  else toast('✅ Pain assessment saved','var(--given)');
 }
 
 function renderPainLog(){
@@ -8823,6 +8880,7 @@ function renderPainLog(){
         ${e.action  ?`<div style="font-size:.76rem;color:var(--given);margin-top:2px">✅ ${e.action}</div>`:''}
         ${e.notes   ?`<div style="font-size:.74rem;color:var(--slate-light);font-style:italic;margin-top:2px">"${e.notes}"</div>`:''}
       </div>
+      <button class="btn btn-secondary btn-xs" style="font-size:.68rem;padding:2px 7px;margin-right:3px" onclick="editPain(${e.id})">✏️</button>
       <button class="btn btn-danger btn-xs btn-icon" onclick="deletePain(${e.id})">✕</button>
     </div>`;
   }).join('');
