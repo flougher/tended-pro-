@@ -1442,6 +1442,7 @@ body {
 
 <!-- ═══ MAR ════════════════════════════════════════════════ -->
 <div id="section-mar" class="section">
+  <div id="mar-patient-bar" style="margin-bottom:0"></div>
   <div class="ph">
     <div>
       <div class="ph-title">💊 Medication Administration</div>
@@ -1593,6 +1594,7 @@ body {
     </div>
     <button class="btn btn-teal" onclick="openModal('sundowning-modal')">+ Log Episode</button>
   </div>
+  <div id="sd-prediction-alert"></div>
   <div style="background:#FFF8EC;border:1.5px solid #C9963A;border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:#92400E;line-height:1.6">
     🌅 <strong>About Sundowning:</strong> Sundowning (late-day confusion) typically occurs in the late afternoon or evening in patients with dementia or Alzheimer's. Document episodes to identify patterns and improve care planning. Always notify your supervisor of severe episodes.
   </div>
@@ -1646,6 +1648,20 @@ body {
     </div>
     <div class="fg"><label>Supervisor Notified</label>
       <input id="sd-notified" placeholder="Name of supervisor notified (if applicable)"></div>
+    <div class="fg"><label>Environmental Factors <span style="font-size:.7rem;color:var(--slate-light)">(select all that apply)</span></label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px" id="sd-env-factors">
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="low-light"> 🌑 Low / dim light</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="noise"> 🔊 Loud noise</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="routine-change"> 🔄 Routine change</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="new-staff"> 👤 Unfamiliar staff</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="late-meal"> 🍽️ Late meal</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="visitors"> 👥 Visitors</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="overstimulation"> ⚡ Overstimulation</label>
+      </div>
+    </div>
+    <div class="fg"><label>What Worked <span style="font-size:.7rem;color:var(--teal)">— helps build the prediction</span></label>
+      <textarea id="sd-what-worked" rows="2" placeholder="e.g. Familiar music, family photos, one-on-one calm time..." style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;width:100%;resize:vertical"></textarea>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('sundowning-modal')">Cancel</button>
       <button class="btn btn-teal" onclick="saveSundowning()">Save Episode</button>
@@ -1663,6 +1679,7 @@ body {
     <button class="btn btn-teal" onclick="openModal('wandering-modal')">+ Log Incident</button>
   </div>
   <div id="wandering-patient-bar" style="margin-bottom:10px"></div>
+  <div id="wd-prediction-alert"></div>
   <div style="background:var(--refused-bg);border:1.5px solid var(--refused);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:16px;font-size:.78rem;color:var(--refused);line-height:1.6">
     ⚠️ <strong>Safety Notice:</strong> Wandering and elopement are serious safety events. Document every incident immediately and notify your supervisor per your agency's protocol. Elopement attempts must always be reported.
   </div>
@@ -1701,6 +1718,19 @@ body {
       <input id="wd-notified" placeholder="Names of all persons notified"></div>
     <div class="fg"><label>Prevention Measures Implemented</label>
       <input id="wd-prevention" placeholder="e.g. Door alarm activated, bed alarm set, room moved closer to nurses station…"></div>
+    <div class="fg"><label>Contributing Triggers <span style="font-size:.7rem;color:var(--slate-light)">(select all that apply)</span></label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px" id="wd-trigger-factors">
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="night-time"> 🌙 Night-time</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="bed-alarm-off"> 🔕 Bed alarm off</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="unsecured-door"> 🚪 Unsecured door</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="disorientation"> 🔄 Disorientation</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="distress"> 😰 Emotional distress</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:.8rem;cursor:pointer"><input type="checkbox" value="family-seeking"> 👨‍👩‍👧 Seeking family</label>
+      </div>
+    </div>
+    <div class="fg"><label>What Worked <span style="font-size:.7rem;color:var(--teal)">— helps build the prediction</span></label>
+      <textarea id="wd-what-worked" rows="2" placeholder="e.g. Daughter phone call, familiar music, gentle redirection to familiar area..." style="border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-family:var(--font-body);font-size:.9rem;width:100%;resize:vertical"></textarea>
+    </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('wandering-modal')">Cancel</button>
       <button class="btn btn-teal" onclick="saveWandering()">Save Incident</button>
@@ -2026,6 +2056,7 @@ body {
 
 <!-- ═══ DIET & FLUID INTAKE ═══════════════════════════════════ -->
 <div id="section-intake" class="section">
+  <div id="intake-patient-bar" style="margin-bottom:0"></div>
   <div class="ph">
     <div>
       <div class="ph-title">🍽️ Diet & Fluid Intake</div>
@@ -2183,6 +2214,7 @@ body {
 
 <!-- ═══ PAIN SCALE ══════════════════════════════════════════ -->
 <div id="section-pain" class="section">
+  <div id="pain-patient-bar" style="margin-bottom:0"></div>
   <div class="ph">
     <div>
       <div class="ph-title">😣 Pain Scale Log</div>
@@ -2232,6 +2264,7 @@ body {
 
 <!-- ═══ TOILETING ════════════════════════════════════════════ -->
 <div id="section-toileting" class="section">
+  <div id="toileting-patient-bar" style="margin-bottom:0"></div>
   <div class="ph">
     <div><div class="ph-title">🚻 Toileting Log</div>
     <div class="ph-sub" id="toilet-date-sub">Today's toileting record</div></div>
@@ -2263,6 +2296,7 @@ body {
 
 <!-- ═══ WEEKLY TRENDS ═════════════════════════════════════════ -->
 <div id="section-trends" class="section">
+  <div id="trends-patient-bar" style="margin-bottom:0"></div>
   <div class="ph">
     <div><div class="ph-title">📊 Weekly Trends</div>
     <div class="ph-sub">Behavior frequency, patterns, and clinical insights</div></div>
@@ -2293,6 +2327,7 @@ body {
 
 <!-- ═══ VITAL SIGNS ══════════════════════════════════════════ -->
 <div id="section-vitals" class="section">
+  <div id="vitals-patient-bar" style="margin-bottom:0"></div>
   <div class="ph">
     <div>
       <div class="ph-title">🩺 Vital Signs</div>
@@ -2960,19 +2995,24 @@ let D = {
 let _globalPatientId = '';
 
 function setGlobalPatient(id){
-  _globalPatientId = id;
-  localStorage.setItem('tendedPro_globalPatient', id);
-  // Sync all patient selectors across sections
-  ['mar-patient','vitals-patient','pain-patient','report-patient'].forEach(selId => {
+  _globalPatientId = String(id);
+  localStorage.setItem('tendedPro_globalPatient', _globalPatientId);
+  // Sync named selectors
+  ['mar-patient','vitals-patient','pain-patient','report-patient',
+   'global-patient-intake','global-patient-toileting'].forEach(selId => {
     const el = document.getElementById(selId);
-    if(el && el.tagName === 'SELECT') el.value = id;
+    if(el && el.tagName === 'SELECT') el.value = _globalPatientId;
   });
-  // Rebuild patient bars with new selection
-  setTimeout(populatePatientBars, 50);
-  // Update topbar patient indicator
+  // Sync all _bar_ selectors (patient banner dropdowns)
+  document.querySelectorAll('[id^="_bar_"]').forEach(el => {
+    if(el.tagName === 'SELECT') el.value = _globalPatientId;
+  });
+  // Rebuild all patient banners immediately
+  populatePatientBars();
+  // Update topbar badge
   const ind = document.getElementById('topbar-patient-indicator');
   if(ind){
-    const p = (D.patients||[]).find(x => x.id == id);
+    const p = (D.patients||[]).find(x => String(x.id) === _globalPatientId);
     ind.textContent = p ? `👤 ${p.fname} ${p.lname}` : '';
     ind.style.display = p ? 'inline-flex' : 'none';
   }
@@ -2980,49 +3020,86 @@ function setGlobalPatient(id){
 
 function buildPatientSelector(selId, onchangeFn, style=''){
   const patients = D.patients||[];
-  if(!patients.length) return '<div style="font-size:.8rem;color:var(--slate-light);padding:8px 0">No patients added yet</div>';
-  const opts = ['<option value="">— All patients —</option>',
-    ...patients.map(p => `<option value="${p.id}"${p.id==_globalPatientId?' selected':''}>${p.fname} ${p.lname}${p.room?' · '+p.room:''}</option>`)
+  if(!patients.length) return '<div style="font-size:.8rem;color:var(--slate-light);padding:4px 0">No patients added yet — go to Patient Roster to add one.</div>';
+  const opts = ['<option value="">— Select a patient —</option>',
+    ...patients.map(p => `<option value="${p.id}"${String(p.id)===String(_globalPatientId)?' selected':''}>${p.fname} ${p.lname}${p.room?' · Rm '+p.room:''}${p.dob?' · DOB '+p.dob:''}</option>`)
   ].join('');
-  return `<select id="${selId}" onchange="setGlobalPatient(this.value);${onchangeFn}()" style="border:1.5px solid var(--teal);border-radius:var(--r);padding:7px 12px;font-family:var(--font-body);font-size:.84rem;background:white;color:var(--navy);font-weight:600;${style}">${opts}</select>`;
+  return `<select id="${selId}" onchange="setGlobalPatient(this.value);${onchangeFn}()" style="border:2px solid var(--teal);border-radius:var(--r);padding:8px 14px;font-family:var(--font-body);font-size:.9rem;background:white;color:var(--navy);font-weight:700;flex:1;${style}">${opts}</select>`;
+}
+
+function _patientBannerHtml(fn){
+  const p = _globalPatientId ? (D.patients||[]).find(x => String(x.id)===String(_globalPatientId)) : null;
+  const name  = p ? `${p.fname} ${p.lname}` : null;
+  const age   = p?.dob ? Math.floor((Date.now()-new Date(p.dob))/(365.25*24*3600*1000)) : null;
+  const room  = p?.room || null;
+  const allerg= p?.allergies || null;
+  return `<div style="background:linear-gradient(135deg,var(--teal) 0%,#0C7A6E 100%);border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(14,158,142,.25)">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px">
+        <div style="font-size:.68rem;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Documenting for</div>
+        ${name
+          ? `<div style="font-size:1.1rem;font-weight:800;color:white;line-height:1.2">👤 ${name}</div>
+             <div style="font-size:.73rem;color:rgba(255,255,255,.8);margin-top:3px">${[age?`Age ${age}`:'',room?`Room ${room}`:'',allerg?`⚠️ ${allerg}`:''].filter(Boolean).join(' · ')}</div>`
+          : `<div style="font-size:.9rem;font-weight:700;color:rgba(255,255,255,.9)">⚠️ No patient selected</div>
+             <div style="font-size:.7rem;color:rgba(255,255,255,.7);margin-top:2px">Select a patient to document</div>`
+        }
+      </div>
+      <div style="flex:2;min-width:180px;display:flex;align-items:center">
+        ${buildPatientSelector('_bar_'+fn, fn)}
+      </div>
+    </div>
+  </div>`;
 }
 
 function populatePatientBars(){
   if(!(D.patients||[]).length) return;
   const bars = [
-    { id:'incidents-patient-bar',   fn:'renderIncidents',   label:'Viewing incidents for:' },
-    { id:'wounds-patient-bar',      fn:'renderWounds',      label:'Viewing wounds for:' },
-    { id:'behaviors-patient-bar',   fn:'initBehaviors',     label:'Viewing behaviors for:' },
-    { id:'comms-patient-bar',       fn:'renderComms',       label:'Viewing comms for:' },
-    { id:'sundowning-patient-bar',  fn:'renderSundowning',  label:'Viewing sundowning for:' },
-    { id:'wandering-patient-bar',   fn:'renderWandering',   label:'Viewing wandering for:' },
-    { id:'memorycare-patient-bar',  fn:'renderMemoryCare',  label:'Viewing notes for:' },
-    { id:'careplan-patient-bar',    fn:'loadCareplan',      label:'Care plan for:' },
-    { id:'routines-patient-bar',    fn:'renderRoutines',    label:'Routines for:' },
-    { id:'triggers-patient-bar',    fn:'renderTriggers',    label:'Triggers for:' },
-    { id:'billing-patient-bar',     fn:'renderBillingList', label:'Billing for:' },
+    { id:'mar-patient-bar',         fn:'renderMAR'         },
+    { id:'vitals-patient-bar',      fn:'renderVitals'      },
+    { id:'pain-patient-bar',        fn:'renderPainLog'     },
+    { id:'incidents-patient-bar',   fn:'renderIncidents'   },
+    { id:'wounds-patient-bar',      fn:'renderWounds'      },
+    { id:'behaviors-patient-bar',   fn:'initBehaviors'     },
+    { id:'comms-patient-bar',       fn:'renderComms'       },
+    { id:'sundowning-patient-bar',  fn:'renderSundowning'  },
+    { id:'wandering-patient-bar',   fn:'renderWandering'   },
+    { id:'memorycare-patient-bar',  fn:'renderMemoryCare'  },
+    { id:'careplan-patient-bar',    fn:'loadCareplan'      },
+    { id:'routines-patient-bar',    fn:'renderRoutines'    },
+    { id:'triggers-patient-bar',    fn:'renderTriggers'    },
+    { id:'billing-patient-bar',     fn:'renderBillingList' },
+    { id:'intake-patient-bar',      fn:'renderIntake'      },
+    { id:'toileting-patient-bar',   fn:'renderToileting'   },
+    { id:'trends-patient-bar',      fn:'renderTrends'      },
   ];
   bars.forEach(bar => {
     const el = document.getElementById(bar.id);
     if(!el) return;
-    el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;background:var(--off-white);border-radius:var(--r);padding:8px 12px;border:1.5px solid var(--teal)">
-      <span style="font-size:.78rem;color:var(--slate-mid);font-weight:600;flex-shrink:0">👤 Patient:</span>
-      ${buildPatientSelector(bar.id+'-sel', bar.fn)}
-    </div>`;
+    el.innerHTML = _patientBannerHtml(bar.fn);
   });
-  // Also sync intake and toileting dropdowns
-  ['global-patient-intake','global-patient-toileting'].forEach(selId => {
-    const el = document.getElementById(selId);
-    if(!el) return;
-    el.innerHTML = '<option value="">— All patients —</option>' +
-      (D.patients||[]).map(p => `<option value="${p.id}"${String(p.id)===String(_globalPatientId)?' selected':''}>${p.fname} ${p.lname}${p.room?' · '+p.room:''}</option>`).join('');
+  // Sync simple dropdowns (MAR, vitals, pain, intake, toileting, report)
+  const simpleSelectors = [
+    { id:'mar-patient',              fn:'renderMAR'       },
+    { id:'vitals-patient',           fn:'renderVitals'    },
+    { id:'pain-patient',             fn:'renderPainLog'   },
+    { id:'global-patient-intake',    fn:'renderIntake'    },
+    { id:'global-patient-toileting', fn:'renderToileting' },
+    { id:'report-patient',           fn:'renderReport'    },
+  ];
+  simpleSelectors.forEach(({id, fn}) => {
+    const el = document.getElementById(id);
+    if(!el || el.tagName !== 'SELECT') return;
+    el.innerHTML = '<option value="">— Select a patient —</option>' +
+      (D.patients||[]).map(p => `<option value="${p.id}"${String(p.id)===String(_globalPatientId)?' selected':''}>${p.fname} ${p.lname}${p.room?' · Rm '+p.room:''}</option>`).join('');
     if(_globalPatientId) el.value = _globalPatientId;
   });
-  // Also sync vitals and pain selectors
-  ['vitals-patient','pain-patient','report-patient'].forEach(selId => {
-    const el = document.getElementById(selId);
-    if(el && _globalPatientId) el.value = _globalPatientId;
-  });
+  // Update topbar badge
+  const ind = document.getElementById('topbar-patient-indicator');
+  if(ind){
+    const p = (D.patients||[]).find(x => String(x.id)===String(_globalPatientId));
+    ind.textContent = p ? `👤 ${p.fname} ${p.lname}` : '';
+    ind.style.display = p ? 'inline-flex' : 'none';
+  }
 }
 
 
@@ -3829,6 +3906,7 @@ function deleteMed(id){
 // MAR — MEDICATION ADMINISTRATION RECORD
 // ═══════════════════════════════════════════════════════════════
 function initMAR(){
+  populatePatientBars();
   const dateEl = document.getElementById('mar-date');
   if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
   const initEl = document.getElementById('mar-initials');
@@ -5177,7 +5255,7 @@ function renderIncidents(){
   populatePatientBars();
   const el = document.getElementById('incident-list');
   if(!el) return;
-  const _patFilter = document.getElementById('incidents-patient-bar-sel')?.value || _globalPatientId || '';
+  const _patFilter = _globalPatientId;
 
   // Update nav badge
   const todayISO = new Date().toISOString().split('T')[0];
@@ -5187,12 +5265,12 @@ function renderIncidents(){
   const nb = document.getElementById('nb-incidents');
   if(nb){ nb.textContent = todayInc.length; nb.classList.toggle('show', todayInc.length > 0); }
 
-  if(!D.incidents.length){
+  if(!_incSource.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No incidents logged yet.<br>Tap + Log Incident to document an event.</div></div>';
     return;
   }
 
-  el.innerHTML = D.incidents.map(i => {
+  el.innerHTML = _incSource.map(i => {
     const dt = new Date(i.dt);
     return `<div class="incident-card ${i.severity}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
@@ -5647,7 +5725,7 @@ function renderWounds(){
   populatePatientBars();
   const el = document.getElementById('wound-list');
   if(!el) return;
-  const _patFilter = document.getElementById('wounds-patient-bar-sel')?.value || _globalPatientId || '';
+  const _patFilter = _globalPatientId;
   let _woundsFiltered = D.wounds||[];
   if(_patFilter) _woundsFiltered = _woundsFiltered.filter(w => String(w.patientId) === String(_patFilter));
   if(!_woundsFiltered.length){
@@ -5706,6 +5784,7 @@ function deleteWound(id){
 let _editIntakeId = null;
 
 function initIntake(){
+  populatePatientBars();
   const dateEl = document.getElementById('intake-date');
   if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
   const timeEl = document.getElementById('im-time');
@@ -5772,7 +5851,7 @@ function renderIntake(){
   const sub = document.getElementById('intake-date-sub');
   if(sub) sub.textContent = new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
-  const _intakePat = document.getElementById('global-patient-intake')?.value || _globalPatientId || '';
+  const _intakePat = _globalPatientId;
   let entries = (D.intake||[]).filter(e => e.date === dateVal);
   if(_intakePat) entries = entries.filter(e => String(e.patientId) === String(_intakePat));
 
@@ -5891,7 +5970,7 @@ function renderComms(){
   populatePatientBars();
   const el = document.getElementById('comm-list');
   if(!el) return;
-  const _patFilter = document.getElementById('comms-patient-bar-sel')?.value || _globalPatientId || '';
+  const _patFilter = _globalPatientId;
   let _commsFiltered = D.comms||[];
   if(_patFilter) _commsFiltered = _commsFiltered.filter(x => String(x.patientId) === String(_patFilter));
   if(!_commsFiltered.length){
@@ -6128,7 +6207,7 @@ function renderTriggers(){
   populatePatientBars();
   const el = document.getElementById('trigger-list');
   if(!el) return;
-  const _trigPat = document.getElementById('triggers-patient-bar-sel')?.value || _globalPatientId || '';
+  const _trigPat = _globalPatientId;
   let triggers = D.triggers||[];
   if(_trigPat) triggers = triggers.filter(t => String(t.patientId) === String(_trigPat));
   if(!triggers.length){
@@ -6219,7 +6298,7 @@ function renderBehaviorLog(){
   populatePatientBars();
   const el = document.getElementById('behavior-list');
   if(!el) return;
-  const _patFilter = document.getElementById('behaviors-patient-bar-sel')?.value || _globalPatientId || '';
+  const _patFilter = _globalPatientId;
   let _behaviorsFiltered = D.behaviors||[];
   if(_patFilter) _behaviorsFiltered = _behaviorsFiltered.filter(b => String(b.patientId) === String(_patFilter));
   if(!_behaviorsFiltered.length){
@@ -6268,7 +6347,7 @@ function renderBehaviorLog(){
 function renderBehaviorSummary(){
   const el = document.getElementById('behavior-summary');
   if(!el) return;
-  const _bsPatFilter = document.getElementById('behaviors-patient-bar-sel')?.value || _globalPatientId || '';
+  const _bsPatFilter = _globalPatientId;
   let behaviors = D.behaviors || [];
   if(_bsPatFilter) behaviors = behaviors.filter(b => String(b.patientId) === String(_bsPatFilter));
   if(!behaviors.length){
@@ -6415,7 +6494,7 @@ function renderToileting(){
   const sub = document.getElementById('toilet-date-sub');
   if(sub) sub.textContent = new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
-  const _toiletPat = document.getElementById('global-patient-toileting')?.value || _globalPatientId || '';
+  const _toiletPat = _globalPatientId;
   let entries = (D.toileting||[]).filter(e => e.date === dateVal);
   if(_toiletPat) entries = entries.filter(e => String(e.patientId) === String(_toiletPat));
   const voids      = entries.filter(e => e.type==='void'||e.type==='both').length;
@@ -6477,6 +6556,7 @@ function deleteToileting(id){
 
 // ── 5. WEEKLY TRENDS ──────────────────────────────────────────
 function renderTrends(){
+  populatePatientBars();
   renderTrendsPanel('behaviors');
 }
 
@@ -6500,7 +6580,7 @@ function renderBehaviorTrends(){
   const el = document.getElementById('trends-behavior-content');
   if(!el) return;
   const days  = getLast7Days();
-  const behaviors = D.behaviors || [];
+  const behaviors = _globalPatientId ? (D.behaviors||[]).filter(x=>String(x.patientId)===String(_globalPatientId)) : (D.behaviors||[]);
   const dayLabels = days.map(d => new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'}));
   const dayCounts = days.map(d => behaviors.filter(b => b.dt.startsWith(d)).length);
   const maxDay    = Math.max(...dayCounts, 1);
@@ -6559,7 +6639,7 @@ function renderIncidentTrends(){
   const el = document.getElementById('trends-incident-content');
   if(!el) return;
   const days      = getLast7Days();
-  const incidents = D.incidents || [];
+  const incidents = _globalPatientId ? (D.incidents||[]).filter(x=>String(x.patientId)===String(_globalPatientId)) : (D.incidents||[]);
   const dayLabels = days.map(d => new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'}));
   const dayCounts = days.map(d => incidents.filter(i => i.dt.startsWith(d)).length);
   const maxDay    = Math.max(...dayCounts,1);
@@ -6607,7 +6687,7 @@ function renderToiletingTrends(){
   const el = document.getElementById('trends-toilet-content');
   if(!el) return;
   const days    = getLast7Days();
-  const entries = D.toileting || [];
+  const entries = _globalPatientId ? (D.toileting||[]).filter(x=>String(x.patientId)===String(_globalPatientId)) : (D.toileting||[]);
   const dayLabels = days.map(d => new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'}));
   const voidCounts = days.map(d => entries.filter(e => e.date===d && (e.type==='void'||e.type==='both')).length);
   const bmCounts   = days.map(d => entries.filter(e => e.date===d && (e.type==='bm'||e.type==='both')).length);
@@ -6642,7 +6722,7 @@ function renderIntakeTrends(){
   const el = document.getElementById('trends-intake-content');
   if(!el) return;
   const days    = getLast7Days();
-  const entries = D.intake || [];
+  const entries = _globalPatientId ? (D.intake||[]).filter(x=>String(x.patientId)===String(_globalPatientId)) : (D.intake||[]);
   const dayLabels  = days.map(d => new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short'}));
   const fluidTotals = days.map(d => entries.filter(e=>e.date===d).reduce((sum,e)=>sum+(e.fluid||0),0));
   const pctAvgs    = days.map(d => {
@@ -7030,7 +7110,7 @@ function renderBillingList(){
   populatePatientBars();
   const el = document.getElementById('billing-list');
   if(!el) return;
-  const _billPat = document.getElementById('billing-patient-bar-sel')?.value || _globalPatientId || '';
+  const _billPat = _globalPatientId;
   let billing = D.billing || [];
   if(_billPat) billing = billing.filter(b => String(b.patientId) === String(_billPat));
 
@@ -7560,25 +7640,33 @@ function buildSampleData(){
         triggers:'Dimming evening light. Saw unfamiliar face on TV. Missed afternoon nap.',
         interventions:'Turned off TV. Put on Chopin. Showed family photos. Sat with resident 20 min.',
         effectiveness:'Somewhat effective — gradual improvement',
-        notified:'Charge Nurse Martinez' },
+        notified:'Charge Nurse Martinez',
+        envFactors:['low-light','noise','routine-change'],
+        whatWorked:'Familiar music (Chopin). Family photos. One-on-one quiet time.' },
       { id:15002, patientId:pid, date:dStr(-1), time:'17:30', duration:'15–30 minutes', severity:'mild',
         behaviors:'Restless. Asked where husband was. Minor confusion about time of day.',
         triggers:'Change in routine — different aide for dinner.',
         interventions:'Introduced self clearly. Used familiar greeting. Offered tea.',
         effectiveness:'Very effective — resolved quickly',
-        notified:'' },
+        notified:'',
+        envFactors:['routine-change'],
+        whatWorked:'Calm introduction. Familiar greeting ritual. Warm tea.' },
       { id:15003, patientId:pid, date:dStr(-3), time:'18:10', duration:'1–2 hours', severity:'severe',
         behaviors:'Highly agitated. Attempted to leave room repeatedly. Verbally combative. Screaming for daughter. Refused all care.',
         triggers:'Loud announcement over intercom. New staff member on shift. Skipped afternoon rest.',
         interventions:'Closed door to reduce noise. Called daughter Linda by phone — resident calmed hearing her voice. Dimmed lights. Moved rocking chair to hallway window.',
         effectiveness:'Somewhat effective — gradual improvement',
-        notified:'Charge Nurse Martinez, Supervisor RN Stanton, Daughter Linda Flores (702-555-0182)' },
+        notified:'Charge Nurse Martinez, Supervisor RN Stanton, Daughter Linda Flores (702-555-0182)',
+        envFactors:['noise','routine-change','new-staff'],
+        whatWorked:'Daughter\'s phone call (most effective). Closing door. Dimming lights.' },
       { id:15004, patientId:pid, date:dStr(-5), time:'17:00', duration:'< 15 minutes', severity:'mild',
         behaviors:'Mild restlessness. Asked about dinner time repeatedly. Slightly confused.',
         triggers:'Overcast day — poor natural light. Slightly late dinner.',
         interventions:'Turned on extra lamp. Gave small snack. Reassured dinner coming soon.',
         effectiveness:'Very effective — resolved quickly',
-        notified:'' }
+        notified:'',
+        envFactors:['low-light','late-meal'],
+        whatWorked:'Extra lighting. Small snack. Verbal reassurance about dinner.' }
     ],
     wandering: [
       { id:16001, patientId:pid, date:dStr(-2), time:'02:15', type:'Night-time wandering', isElopement:false,
@@ -7587,7 +7675,9 @@ function buildSampleData(){
         condition:'Confused but calm. In nightgown. No injury.',
         action:'Gently redirected to room. Offered warm milk. Ensured bed alarm was set.',
         notified:'Charge Nurse Martinez, Supervisor RN Stanton',
-        prevention:'Bed alarm reactivated. Door alarm checked. Room reassessed for safety.' },
+        prevention:'Bed alarm reactivated. Door alarm checked. Room reassessed for safety.',
+        triggers:['night-time','bed-alarm-off'],
+        whatWorked:'Warm milk and calm redirection. Familiar reassurance about being safe.' },
       { id:16002, patientId:pid, date:dStr(-4), time:'14:30', type:'Wandering — entered restricted area', isElopement:false,
         location:'Staff break room — resident entered through propped door',
         duration:'Approximately 3 minutes',
@@ -7601,7 +7691,9 @@ function buildSampleData(){
         condition:'Distressed. Dressed in coat over nightgown. Carrying purse. Stated "I need to get home to my children."',
         action:'Gently intercepted at door. Escorted to quiet lounge. Offered tea. Called daughter Linda. Incident report filed.',
         notified:'Charge Nurse Martinez, Supervisor RN Stanton, DON, Daughter Linda Flores, Son Robert Thompson',
-        prevention:'Coded door access reviewed. Additional door alarm installed. Care plan updated. 1:1 monitoring during high-risk hours 2am–5am.' }
+        prevention:'Coded door access reviewed. Additional door alarm installed. Care plan updated. 1:1 monitoring during high-risk hours 2am–5am.',
+        triggers:['night-time','distress','family-seeking'],
+        whatWorked:'Daughter phone call most effective. Validation of wanting to go home. Familiar music calmed her after 15 min.' }
     ],
     memorycare: [
       { id:17001, patientId:pid, date:todayISO, shift:'Morning (7am–3pm)',
@@ -7917,6 +8009,7 @@ function renderBBWDashboardAlert(){
 // ═══════════════════════════════════════════════════════════════
 
 function initVitals(){
+  populatePatientBars();
   const dateEl = document.getElementById('vitals-date');
   if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
   populateVitalsPatients();
@@ -8386,15 +8479,21 @@ function saveSundowning(){
   const time = document.getElementById('sd-time')?.value;
   if(!date || !time){ toast('Please enter date and time', 'var(--held)'); return; }
   if(!D.sundowning) D.sundowning = [];
+  // Collect environmental factor checkboxes
+  const envFactors = Array.from(
+    document.querySelectorAll('#sd-env-factors input[type="checkbox"]:checked')
+  ).map(cb => cb.value);
   const sdFields = {
     date, time,
-    duration:     document.getElementById('sd-duration')?.value     || '',
-    severity:     document.getElementById('sd-severity')?.value     || 'mild',
-    behaviors:    document.getElementById('sd-behaviors')?.value.trim()    || '',
-    triggers:     document.getElementById('sd-triggers')?.value.trim()     || '',
-    interventions:document.getElementById('sd-interventions')?.value.trim()|| '',
-    effectiveness:document.getElementById('sd-effectiveness')?.value      || '',
-    notified:     document.getElementById('sd-notified')?.value.trim()     || ''
+    duration:     document.getElementById('sd-duration')?.value      || '',
+    severity:     document.getElementById('sd-severity')?.value      || 'mild',
+    behaviors:    document.getElementById('sd-behaviors')?.value.trim()     || '',
+    triggers:     document.getElementById('sd-triggers')?.value.trim()      || '',
+    interventions:document.getElementById('sd-interventions')?.value.trim() || '',
+    effectiveness:document.getElementById('sd-effectiveness')?.value        || '',
+    notified:     document.getElementById('sd-notified')?.value.trim()      || '',
+    envFactors,
+    whatWorked:   document.getElementById('sd-what-worked')?.value.trim()   || ''
   };
   if(_editSundownId !== null){
     const idx = D.sundowning.findIndex(x => x.id === _editSundownId);
@@ -8411,9 +8510,10 @@ function saveSundowning(){
   }
   D.sundowning.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   save(); closeModal('sundowning-modal');
-  ['sd-behaviors','sd-triggers','sd-interventions','sd-notified'].forEach(id => {
+  ['sd-behaviors','sd-triggers','sd-interventions','sd-notified','sd-what-worked'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
+  document.querySelectorAll('#sd-env-factors input[type="checkbox"]').forEach(cb => cb.checked = false);
   renderSundowning();
 }
 
@@ -8425,16 +8525,152 @@ function toggleSundowningAll(){
   renderSundowning();
 }
 
+function computeSundowningPrediction(entries){
+  // Returns prediction object for the selected patient
+  if(!entries || entries.length < 2) return null;
+
+  // Extract hour from each episode time string "HH:MM"
+  const hours = entries.map(e => {
+    const m = (e.time||'').match(/^(\d{1,2}):(\d{2})/);
+    return m ? parseInt(m[1]) + parseInt(m[2])/60 : null;
+  }).filter(h => h !== null);
+
+  if(hours.length < 2) return null;
+
+  // Calculate mean peak hour
+  const mean = hours.reduce((a,b) => a+b, 0) / hours.length;
+  const variance = hours.reduce((s,h) => s + Math.pow(h-mean,2), 0) / hours.length;
+  const stdDev = Math.sqrt(variance);
+
+  // Risk window: mean ± 1 stdDev (capped to be at least 1 hour window)
+  const windowSize = Math.max(1, stdDev);
+  const windowStart = Math.max(0, mean - windowSize);
+  const windowEnd   = Math.min(23.99, mean + windowSize);
+
+  // Format time
+  const fmtHr = h => {
+    const hr = Math.floor(h);
+    const mn = Math.round((h - hr) * 60);
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    const h12  = hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr);
+    return `${h12}:${mn.toString().padStart(2,'0')} ${ampm}`;
+  };
+
+  // Severity distribution
+  const sevCounts = { mild:0, moderate:0, severe:0 };
+  entries.forEach(e => { if(sevCounts[e.severity] !== undefined) sevCounts[e.severity]++; });
+  const dominantSev = Object.entries(sevCounts).sort((a,b)=>b[1]-a[1])[0][0];
+
+  // Most effective interventions (from whatWorked fields)
+  const whatWorked = entries
+    .map(e => e.whatWorked)
+    .filter(Boolean);
+
+  // Common environmental factors
+  const envAll = entries.flatMap(e => e.envFactors||[]);
+  const envCount = {};
+  envAll.forEach(f => { envCount[f] = (envCount[f]||0) + 1; });
+  const topEnv = Object.entries(envCount)
+    .filter(([,n]) => n >= 2)
+    .sort((a,b) => b[1]-a[1])
+    .map(([k]) => k);
+
+  // Risk level
+  const recentEntries = entries.filter(e => {
+    const d = new Date(e.date);
+    return (Date.now() - d) < 7 * 24 * 3600 * 1000;
+  });
+  const riskLevel = recentEntries.length >= 3 ? 'high'
+                  : recentEntries.length >= 1 ? 'medium' : 'low';
+
+  // Is current time in risk window?
+  const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+  const inWindowNow = nowHour >= windowStart && nowHour <= windowEnd;
+
+  return {
+    episodeCount: entries.length,
+    mean, windowStart, windowEnd, stdDev,
+    peakTime: fmtHr(mean),
+    windowStartFmt: fmtHr(windowStart),
+    windowEndFmt: fmtHr(windowEnd),
+    dominantSev,
+    whatWorked,
+    topEnv,
+    riskLevel,
+    recentCount: recentEntries.length,
+    inWindowNow
+  };
+}
+
+function renderSundowningPredictionAlert(entries){
+  const el = document.getElementById('sd-prediction-alert');
+  if(!el) return;
+  const pred = computeSundowningPrediction(entries);
+  if(!pred){ el.innerHTML = ''; return; }
+
+  const riskColor = { high:'var(--refused)', medium:'#C47A00', low:'var(--given)' };
+  const riskBg    = { high:'var(--refused-bg)', medium:'#FFF3D0', low:'#EDF7EE' };
+  const riskLabel = { high:'⚠️ HIGH RISK', medium:'⚡ MODERATE RISK', low:'✅ LOW RISK' };
+
+  const envLabels = {
+    'low-light':       '🌑 Low / dim lighting',
+    'noise':           '🔊 Loud noise / intercom',
+    'routine-change':  '🔄 Routine disruption',
+    'new-staff':       '👤 Unfamiliar staff',
+    'late-meal':       '🍽️ Late meal / snack',
+    'visitors':        '👥 Visitors / activity',
+    'overstimulation': '⚡ Overstimulation',
+  };
+
+  const nowWarning = pred.inWindowNow
+    ? `<div style="background:var(--refused);color:white;border-radius:var(--r);padding:8px 14px;font-size:.8rem;font-weight:700;margin-top:10px;animation:pulse 2s infinite">
+        ⚠️ ACTIVE RISK WINDOW — Patient is currently in their peak sundowning period. Increase observation now.
+      </div>` : '';
+
+  el.innerHTML = `
+    <div style="background:${riskBg[pred.riskLevel]};border:2px solid ${riskColor[pred.riskLevel]};border-radius:var(--r-lg);padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div>
+          <span style="font-size:.68rem;font-weight:700;color:${riskColor[pred.riskLevel]};text-transform:uppercase;letter-spacing:.08em">🔮 Prediction Alert</span>
+          <div style="font-size:1rem;font-weight:800;color:var(--navy);margin-top:2px">Peak Risk Window: ${pred.windowStartFmt} – ${pred.windowEndFmt}</div>
+          <div style="font-size:.76rem;color:var(--slate-mid);margin-top:2px">Based on ${pred.episodeCount} logged episode${pred.episodeCount!==1?'s':''} · Avg peak ${pred.peakTime}</div>
+        </div>
+        <span style="background:${riskColor[pred.riskLevel]};color:white;font-size:.7rem;font-weight:800;padding:4px 12px;border-radius:20px;white-space:nowrap">${riskLabel[pred.riskLevel]}</span>
+      </div>
+
+      ${nowWarning}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+        ${pred.topEnv.length ? `<div style="background:white;border-radius:var(--r);padding:10px">
+          <div style="font-size:.68rem;font-weight:700;color:var(--slate-mid);text-transform:uppercase;margin-bottom:6px">Common Triggers</div>
+          ${pred.topEnv.slice(0,4).map(e => `<div style="font-size:.76rem;color:var(--navy);margin-bottom:3px">${envLabels[e]||e}</div>`).join('')}
+        </div>` : ''}
+        ${pred.whatWorked.length ? `<div style="background:white;border-radius:var(--r);padding:10px">
+          <div style="font-size:.68rem;font-weight:700;color:var(--slate-mid);text-transform:uppercase;margin-bottom:6px">What Works</div>
+          <div style="font-size:.76rem;color:var(--navy);line-height:1.5">${pred.whatWorked[pred.whatWorked.length-1]}</div>
+        </div>` : ''}
+      </div>
+
+      <div style="margin-top:10px;font-size:.72rem;color:var(--slate-mid);border-top:1px solid rgba(0,0,0,.08);padding-top:8px">
+        📋 ${pred.recentCount} episode${pred.recentCount!==1?'s':''} in past 7 days · Predominant severity: ${pred.dominantSev}
+      </div>
+    </div>`;
+}
+
 function renderSundowning(){
   populatePatientBars();
   const el = document.getElementById('sundowning-list');
   if(!el) return;
   const dateVal = document.getElementById('sundowning-date')?.value || new Date().toISOString().split('T')[0];
-  const _sdPat = document.getElementById('sundowning-patient-bar-sel')?.value || _globalPatientId || '';
+  const _sdPat = _globalPatientId;
   let allEntries = D.sundowning||[];
   if(_sdPat) allEntries = allEntries.filter(e => String(e.patientId) === String(_sdPat));
   const entries = _sdShowAll ? allEntries : allEntries.filter(e => e.date === dateVal);
   const allCount = allEntries.length;
+
+  // Render prediction alert (only when patient selected and has entries)
+  if(_sdPat) renderSundowningPredictionAlert(allEntries);
+  else { const palEl = document.getElementById('sd-prediction-alert'); if(palEl) palEl.innerHTML = ''; }
 
   if(!allCount){
     el.innerHTML = '<div class="empty"><div class="empty-icon">🌅</div><div class="empty-text">No sundowning episodes logged yet.<br>Tap + Log Episode to document an event.</div></div>';
@@ -8462,6 +8698,8 @@ function renderSundowning(){
       ${e.interventions?`<div style="font-size:.82rem;color:var(--teal);margin-bottom:5px">🔧 Interventions: ${e.interventions}</div>`:''}
       ${e.effectiveness?`<div style="font-size:.78rem;color:var(--slate-light)">Effectiveness: ${e.effectiveness}</div>`:''}
       ${e.notified?`<div style="font-size:.78rem;color:var(--slate-light)">📣 Notified: ${e.notified}</div>`:''}
+      ${e.whatWorked?`<div style="font-size:.76rem;color:var(--teal);margin-top:6px;padding:6px 10px;background:#EDF7F6;border-radius:6px;border-left:3px solid var(--teal)">✅ <strong>What worked:</strong> ${e.whatWorked}</div>`:''}
+      ${(e.envFactors&&e.envFactors.length)?`<div style="font-size:.72rem;color:var(--slate-mid);margin-top:4px">🔍 Triggers: ${e.envFactors.join(', ')}</div>`:''}
     </div>`).join('');
 }
 
@@ -8478,6 +8716,11 @@ function editSundowning(id){
   set('sd-interventions',e.interventions);
   set('sd-effectiveness',e.effectiveness);
   set('sd-notified',     e.notified);
+  set('sd-what-worked',  e.whatWorked||'');
+  // Set environmental factor checkboxes
+  document.querySelectorAll('#sd-env-factors input[type="checkbox"]').forEach(cb => {
+    cb.checked = (e.envFactors||[]).includes(cb.value);
+  });
   _editSundownId = id;
   const title = document.querySelector('#sundowning-modal .modal-title');
   if(title) title.textContent = '✏️ Edit Sundowning Episode';
@@ -8513,14 +8756,19 @@ function saveWandering(){
   if(!D.wandering) D.wandering = [];
   const type = document.getElementById('wd-type')?.value || '';
   const isElopement = type.toLowerCase().includes('elopement');
+  const triggers = Array.from(
+    document.querySelectorAll('#wd-trigger-factors input[type="checkbox"]:checked')
+  ).map(cb => cb.value);
   const wdFields = {
     date, time, type, isElopement,
-    location:   document.getElementById('wd-location')?.value.trim()  || '',
-    duration:   document.getElementById('wd-duration')?.value.trim()  || '',
-    condition:  document.getElementById('wd-condition')?.value.trim() || '',
-    action:     document.getElementById('wd-action')?.value.trim()    || '',
+    location:   document.getElementById('wd-location')?.value.trim()   || '',
+    duration:   document.getElementById('wd-duration')?.value.trim()   || '',
+    condition:  document.getElementById('wd-condition')?.value.trim()  || '',
+    action:     document.getElementById('wd-action')?.value.trim()     || '',
     notified,
-    prevention: document.getElementById('wd-prevention')?.value.trim()|| ''
+    prevention: document.getElementById('wd-prevention')?.value.trim() || '',
+    triggers,
+    whatWorked: document.getElementById('wd-what-worked')?.value.trim()|| ''
   };
   if(_editWanderingId !== null){
     const idx = D.wandering.findIndex(x => x.id === _editWanderingId);
@@ -8537,19 +8785,170 @@ function saveWandering(){
   }
   D.wandering.sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   save(); closeModal('wandering-modal');
-  ['wd-location','wd-duration','wd-condition','wd-action','wd-notified','wd-prevention'].forEach(id => {
+  ['wd-location','wd-duration','wd-condition','wd-action','wd-notified','wd-prevention','wd-what-worked'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value = '';
   });
+  document.querySelectorAll('#wd-trigger-factors input[type="checkbox"]').forEach(cb => cb.checked = false);
   renderWandering();
+}
+
+function computeWanderingPrediction(entries){
+  if(!entries || entries.length < 2) return null;
+
+  // Extract hours from time strings
+  const hours = entries.map(e => {
+    const m = (e.time||'').match(/^(\d{1,2}):(\d{2})/);
+    return m ? parseInt(m[1]) + parseInt(m[2])/60 : null;
+  }).filter(h => h !== null);
+  if(hours.length < 2) return null;
+
+  // Mean peak hour and standard deviation
+  const mean = hours.reduce((a,b)=>a+b,0) / hours.length;
+  const stdDev = Math.sqrt(hours.reduce((s,h)=>s+Math.pow(h-mean,2),0)/hours.length);
+  const windowSize = Math.max(1, stdDev);
+  const windowStart = Math.max(0, mean - windowSize);
+  const windowEnd   = Math.min(23.99, mean + windowSize);
+
+  const fmtHr = h => {
+    const hr = Math.floor(h), mn = Math.round((h-hr)*60);
+    const ampm = hr>=12?'PM':'AM', h12 = hr>12?hr-12:(hr===0?12:hr);
+    return `${h12}:${mn.toString().padStart(2,'0')} ${ampm}`;
+  };
+
+  // Elopement count
+  const elopements = entries.filter(e => e.isElopement).length;
+
+  // Night-time vs daytime
+  const nightCount = entries.filter(e => {
+    const h = parseFloat((e.time||'0').split(':')[0]);
+    return h >= 22 || h <= 5;
+  }).length;
+  const isNightRisk = nightCount >= Math.ceil(entries.length / 2);
+
+  // Common triggers
+  const trigAll = entries.flatMap(e => e.triggers||[]);
+  const trigCount = {};
+  trigAll.forEach(t => { trigCount[t] = (trigCount[t]||0)+1; });
+  const topTriggers = Object.entries(trigCount)
+    .filter(([,n]) => n >= 2)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([k])=>k);
+
+  // What worked
+  const whatWorked = entries.map(e=>e.whatWorked).filter(Boolean);
+
+  // Recent activity
+  const recentEntries = entries.filter(e =>
+    (Date.now()-new Date(e.date)) < 14*24*3600*1000);
+  const riskLevel = elopements > 0 ? 'critical'
+    : recentEntries.length >= 3 ? 'high'
+    : recentEntries.length >= 1 ? 'medium' : 'low';
+
+  // Current hour in window?
+  const nowHour = new Date().getHours() + new Date().getMinutes()/60;
+  const inWindowNow = nowHour >= windowStart && nowHour <= windowEnd;
+
+  return {
+    episodeCount: entries.length,
+    elopements, isNightRisk,
+    mean, windowStart, windowEnd,
+    peakTime: fmtHr(mean),
+    windowStartFmt: fmtHr(windowStart),
+    windowEndFmt: fmtHr(windowEnd),
+    topTriggers, whatWorked,
+    riskLevel, recentCount: recentEntries.length,
+    inWindowNow
+  };
+}
+
+function renderWanderingPredictionAlert(entries){
+  const el = document.getElementById('wd-prediction-alert');
+  if(!el) return;
+  const pred = computeWanderingPrediction(entries);
+  if(!pred){ el.innerHTML = ''; return; }
+
+  const riskColor = {
+    critical:'#7C0000', high:'var(--refused)',
+    medium:'#C47A00',   low:'var(--given)'
+  };
+  const riskBg = {
+    critical:'#FFF0F0', high:'var(--refused-bg)',
+    medium:'#FFF3D0',   low:'#EDF7EE'
+  };
+  const riskLabel = {
+    critical:'🚨 CRITICAL — ELOPEMENT HISTORY',
+    high:'⚠️ HIGH RISK',
+    medium:'⚡ MODERATE RISK',
+    low:'✅ LOW RISK'
+  };
+
+  const trigLabels = {
+    'night-time':     '🌙 Night-time hours',
+    'bed-alarm-off':  '🔕 Bed alarm off',
+    'unsecured-door': '🚪 Unsecured door',
+    'disorientation': '🔄 Disorientation',
+    'distress':       '😰 Emotional distress',
+    'family-seeking': '👨‍👩‍👧 Seeking family',
+  };
+
+  const nowWarning = pred.inWindowNow
+    ? `<div style="background:var(--refused);color:white;border-radius:var(--r);padding:8px 14px;font-size:.8rem;font-weight:700;margin-top:10px">
+        🚨 ACTIVE RISK WINDOW — Patient is currently in their peak wandering period. Verify all safety measures now.
+      </div>` : '';
+
+  const nightBadge = pred.isNightRisk
+    ? `<span style="background:#1a1a2e;color:white;font-size:.68rem;padding:2px 8px;border-radius:10px;margin-left:6px">🌙 Night-time risk</span>` : '';
+
+  const elopBadge = pred.elopements > 0
+    ? `<div style="background:#7C0000;color:white;border-radius:var(--r);padding:6px 12px;font-size:.78rem;font-weight:700;margin-top:8px">
+        🚨 ${pred.elopements} elopement attempt${pred.elopements>1?'s':''} on record — maximum vigilance required
+      </div>` : '';
+
+  el.innerHTML = `
+    <div style="background:${riskBg[pred.riskLevel]};border:2px solid ${riskColor[pred.riskLevel]};border-radius:var(--r-lg);padding:16px;margin-bottom:16px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <div>
+          <span style="font-size:.68rem;font-weight:700;color:${riskColor[pred.riskLevel]};text-transform:uppercase;letter-spacing:.08em">🔮 Wandering Prediction</span>
+          <div style="font-size:1rem;font-weight:800;color:var(--navy);margin-top:2px">
+            Peak Risk Window: ${pred.windowStartFmt} – ${pred.windowEndFmt}${nightBadge}
+          </div>
+          <div style="font-size:.76rem;color:var(--slate-mid);margin-top:2px">
+            Based on ${pred.episodeCount} logged incident${pred.episodeCount!==1?'s':''} · Avg peak ${pred.peakTime}
+          </div>
+        </div>
+        <span style="background:${riskColor[pred.riskLevel]};color:white;font-size:.68rem;font-weight:800;padding:4px 12px;border-radius:20px;white-space:nowrap">${riskLabel[pred.riskLevel]}</span>
+      </div>
+
+      ${elopBadge}
+      ${nowWarning}
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+        ${pred.topTriggers.length ? `<div style="background:white;border-radius:var(--r);padding:10px">
+          <div style="font-size:.68rem;font-weight:700;color:var(--slate-mid);text-transform:uppercase;margin-bottom:6px">Common Triggers</div>
+          ${pred.topTriggers.slice(0,4).map(t=>`<div style="font-size:.76rem;color:var(--navy);margin-bottom:3px">${trigLabels[t]||t}</div>`).join('')}
+        </div>` : ''}
+        ${pred.whatWorked.length ? `<div style="background:white;border-radius:var(--r);padding:10px">
+          <div style="font-size:.68rem;font-weight:700;color:var(--slate-mid);text-transform:uppercase;margin-bottom:6px">What Works</div>
+          <div style="font-size:.76rem;color:var(--navy);line-height:1.5">${pred.whatWorked[pred.whatWorked.length-1]}</div>
+        </div>` : ''}
+      </div>
+
+      <div style="margin-top:10px;font-size:.72rem;color:var(--slate-mid);border-top:1px solid rgba(0,0,0,.08);padding-top:8px">
+        📋 ${pred.recentCount} incident${pred.recentCount!==1?'s':''} in past 14 days · ${pred.isNightRisk?'Higher risk at night':'Daytime risk pattern'}
+      </div>
+    </div>`;
 }
 
 function renderWandering(){
   populatePatientBars();
   const el = document.getElementById('wandering-list');
   if(!el) return;
-  const _wdPat = document.getElementById('wandering-patient-bar-sel')?.value || _globalPatientId || '';
+  const _wdPat = _globalPatientId;
   let entries = D.wandering||[];
   if(_wdPat) entries = entries.filter(e => String(e.patientId) === String(_wdPat));
+  // Render prediction alert
+  if(_wdPat) renderWanderingPredictionAlert(entries);
+  else { const el = document.getElementById('wd-prediction-alert'); if(el) el.innerHTML = ''; }
   if(!entries.length){
     el.innerHTML = '<div class="empty"><div class="empty-icon">🚶</div><div class="empty-text">No wandering incidents logged.<br>Tap + Log Incident to document an event.</div></div>';
     return;
@@ -8572,6 +8971,8 @@ function renderWandering(){
       ${e.action?`<div style="font-size:.82rem;color:var(--teal);margin-bottom:4px">🔧 Action: ${e.action}</div>`:''}
       ${e.notified?`<div style="font-size:.78rem;color:var(--slate-light);margin-bottom:3px">📣 Notified: ${e.notified}</div>`:''}
       ${e.prevention?`<div style="font-size:.78rem;color:var(--slate-light)">🛡 Prevention: ${e.prevention}</div>`:''}
+      ${e.whatWorked?`<div style="font-size:.76rem;color:var(--teal);margin-top:6px;padding:6px 10px;background:#EDF7F6;border-radius:6px;border-left:3px solid var(--teal)">✅ <strong>What worked:</strong> ${e.whatWorked}</div>`:''}
+      ${(e.triggers&&e.triggers.length)?`<div style="font-size:.72rem;color:var(--slate-mid);margin-top:4px">🔍 Triggers: ${e.triggers.join(', ')}</div>`:''}
     </div>`).join('');
 }
 
@@ -8579,15 +8980,19 @@ function editWandering(id){
   const e = (D.wandering||[]).find(x => x.id === id);
   if(!e) return;
   const set = (elId, val) => { const el = document.getElementById(elId); if(el) el.value = val||''; };
-  set('wd-date',      e.date);
-  set('wd-time',      e.time);
-  set('wd-type',      e.type);
-  set('wd-location',  e.location);
-  set('wd-duration',  e.duration);
-  set('wd-condition', e.condition);
-  set('wd-action',    e.action);
-  set('wd-notified',  e.notified);
-  set('wd-prevention',e.prevention);
+  set('wd-date',       e.date);
+  set('wd-time',       e.time);
+  set('wd-type',       e.type);
+  set('wd-location',   e.location);
+  set('wd-duration',   e.duration);
+  set('wd-condition',  e.condition);
+  set('wd-action',     e.action);
+  set('wd-notified',   e.notified);
+  set('wd-prevention', e.prevention);
+  set('wd-what-worked',e.whatWorked||'');
+  document.querySelectorAll('#wd-trigger-factors input[type="checkbox"]').forEach(cb => {
+    cb.checked = (e.triggers||[]).includes(cb.value);
+  });
   _editWanderingId = id;
   const title = document.querySelector('#wandering-modal .modal-title');
   if(title) title.textContent = '✏️ Edit Wandering Incident';
@@ -8655,7 +9060,7 @@ function renderMemoryCare(){
   populatePatientBars();
   const el = document.getElementById('memorycare-list');
   if(!el) return;
-  const _mcPat = document.getElementById('memorycare-patient-bar-sel')?.value || _globalPatientId || '';
+  const _mcPat = _globalPatientId;
   let entries = D.memorycare||[];
   if(_mcPat) entries = entries.filter(e => String(e.patientId) === String(_mcPat));
   if(!entries.length){
@@ -8731,6 +9136,7 @@ const PAIN_FACE  = ['😊','😊','😊','🙂','🙂','😐','😐','😟','�
 const PAIN_COLOR = ['var(--given)','var(--given)','var(--given)','var(--given)','var(--given)','var(--held)','var(--held)','var(--refused)','var(--refused)','var(--refused)','var(--refused)'];
 
 function initPain(){
+  populatePatientBars();
   const dateEl = document.getElementById('pain-date');
   if(dateEl && !dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
   populatePainPatients();
